@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{ECC5EDF2-FB7F-44C2-A78A-544D6D58D5D5}|">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MiniTwitWebApi/libraries/EmptyClass.cs">
+    <Files>
+      <File FileName="MiniTwitWebApi/App_Start/WebApiConfig.cs" Line="17" Column="63" />
+      <File FileName="MiniTwitWebApi/libraries/EmptyClass.cs" Line="9" Column="6" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MiniTwitWebApi" expanded="True">
+            <Node name="MiniTwitWebApi" expanded="True">
+              <Node name="libraries" expanded="True">
+                <Node name="EmptyClass.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.MiniTwitWebApi.Tests FirstBuild="True" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.ItemProperties.MiniTwitWebApi FirstBuild="True" PreferredExecutionTarget="firefox" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>
