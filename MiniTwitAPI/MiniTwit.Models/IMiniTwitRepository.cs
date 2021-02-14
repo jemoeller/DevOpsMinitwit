@@ -9,6 +9,12 @@ namespace MiniTwit.Models
 {
     public interface IMiniTwitRepository
     {
-        Task<Message> getCountAsync();
+        Task<Message> GetMessage(int id);
+        Task<IEnumerable<Message>> GetAuthorMessages(int authorId);
+        Task<IEnumerable<Message>> GetMessagesAsync();
+        Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
+        Task<long> GetUserId(string username);
+        Task FollowUser(string username);
+        Task UnfollowUser(string username);
     }
 }

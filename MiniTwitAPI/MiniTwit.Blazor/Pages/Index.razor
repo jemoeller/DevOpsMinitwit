@@ -22,7 +22,7 @@ else{
 
     protected async override Task OnInitializedAsync()
     {
-        mess = await repo.getCountAsync();
+        mess = await repo.GetMessage(1);
     }
 
 }
