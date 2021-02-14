@@ -1,11 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using MiniTwit.Entities;
 using MiniTwit.Models;
+using static Microsoft.AspNetCore.Http.StatusCodes;
+
 
 namespace MiniTwit.API.Controllers
 {
@@ -51,9 +55,19 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("login/username={username}+password={password}")]
-        public async Task<User> Login(string username, string password)
+        [ProducesResponseType(Status200OK)]
+        [ProducesResponseType(Status404NotFound)]
+        public async Task<HttpStatusCode> Login(string username, string password)
         {
-            return await _repository.Login(username, password);
+            try
+            {
+                await _repository.Login(username, password);
+                return HttpStatusCode.OK;
+            }
+            catch (Exception e)
+            {
+                return HttpStatusCode.NotFound;
+            }
         }
     }
 }
