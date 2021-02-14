@@ -11,6 +11,10 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
+using Microsoft.AspNetCore.Components;
+using MiniTwit.Entities;
+using MiniTwit.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace MiniTwit.API
 {
@@ -26,7 +30,9 @@ namespace MiniTwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
+            services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=MiniTwit.db"));
+            services.AddScoped<IMiniTwitContext, MiniTwitContext>();
+            services.AddScoped<IMiniTwitRepository, MiniTwitRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
