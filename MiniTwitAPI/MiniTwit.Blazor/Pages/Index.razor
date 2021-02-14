@@ -1,0 +1,28 @@
+@page "/"
+@using MiniTwit.Models;
+@inject IMiniTwitRepository repo;
+@using MiniTwit.Entities;
+
+<h1>Hello, world!</h1>
+
+Welcome to your new app.
+
+<SurveyPrompt Title="How is Blazor working for you?" />
+@if (mess == null)
+{
+    <p><em>Loading...</em></p>
+}
+else{
+    <h1>@mess.AuthorId</h1>
+    }
+
+@code {
+    public Message mess;
+
+
+    protected async override Task OnInitializedAsync()
+    {
+        mess = await repo.getCountAsync();
+    }
+
+}
