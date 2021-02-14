@@ -3,6 +3,7 @@
 Minitwit.py
 
 ---------------------IMPORTS--------------------------
+
 import re  
 import time  
 import sqlite3  
