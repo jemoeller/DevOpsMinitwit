@@ -1,0 +1,29 @@
+﻿<Properties StartupConfiguration="{24AD79DD-B737-4D19-A5ED-33CC68F400B1}|Default">
+  <MonoDevelop.Ide.Workbench ActiveDocument="MiniTwit.Models/MiniTwitRepository.cs">
+    <Files>
+      <File FileName="MiniTwit.Models/MiniTwitRepository.cs" Line="37" Column="10" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State name="__root__">
+          <Node name="MiniTwitAPI" expanded="True">
+            <Node name="MiniTwit.API" expanded="True" />
+            <Node name="MiniTwit.Blazor" expanded="True">
+              <Node name="Pages" expanded="True" />
+            </Node>
+            <Node name="MiniTwit.Models" expanded="True">
+              <Node name="MiniTwitRepository.cs" selected="True" />
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.ItemProperties.MiniTwit.API PreferredExecutionTarget="/Applications/Safari.app" />
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MultiItemStartupConfigurations />
+</Properties>

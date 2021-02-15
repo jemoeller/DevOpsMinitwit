@@ -18,7 +18,7 @@ namespace MiniTwit.Entities
         public long AuthorId { get; set; }
         [Required]
         [Column("text", TypeName = "string")]
-        public byte[] Text { get; set; }
+        public string Text { get; set; }
         [Column("pub_date", TypeName = "integer")]
         public long? PubDate { get; set; }
         [Column("flagged", TypeName = "integer")]
