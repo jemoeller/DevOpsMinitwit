@@ -116,14 +116,15 @@ namespace MiniTwit.Models
             return messages;
         }
 
-        public async Task<IEnumerable<TimelineDTO>> Timeline(int per_page, int? currentuser) //TODO:pls deletion of the currentuser
+        public async Task<IEnumerable<TimelineDTO>>
+            Timeline(int per_page, int? currentuser) //TODO:pls deletion of the currentuser
         {
             if (currentuser == null)
             {
                 return await PublicTimeline(per_page);
             }
 
-            var messages = await Task.Run(() => from m in _context.Messages
+            var messages = await Task.Run(() => (from m in _context.Messages
                 join u in _context.Users on m.AuthorId equals u.UserId
                 where m.Flagged == 0 && m.AuthorId == u.UserId && (
                     u.UserId == currentuser || _context.Followers
@@ -136,9 +137,9 @@ namespace MiniTwit.Models
                 {
                     message = m,
                     user = u
-                });
-            
-            return messages.ToList().Take(per_page);
+                }).Take(per_page).ToList());
+
+            return messages;
         }
 
         public async Task Login(string username, string password)
