@@ -49,7 +49,7 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("timeline/")]
-        public async Task<IEnumerable<TimelineDTO>> GetTimeline()
+        public async Task<IEnumerable<TimelineDTO>> GetTimeline() 
         {
             return await _repository.Timeline(30);
         }
