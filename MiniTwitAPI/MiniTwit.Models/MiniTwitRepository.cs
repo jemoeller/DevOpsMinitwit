@@ -7,7 +7,6 @@ using System.Text;
 using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using MiniTwit.Entities;
-using System.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
 
 namespace MiniTwit.Models
@@ -157,25 +156,22 @@ namespace MiniTwit.Models
             
             
             //Compares sha256 byte array of input password to byte array of stored hash of password - if not the same, throws exception
-             if (!sha256.ComputeHash(Encoding.ASCII.GetBytes(password)).SequenceEqual(Encoding.ASCII.GetBytes(user.PwHash.Split(":")[2])))
-             {
-                 throw new ArgumentException("Invalid password");
-             }
+            var storedHash = user.PwHash.Split("$");
+            var salt = storedHash[1];
+            var hashValue = storedHash[2];
+            var computedHash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
+            var computedHashAlt = sha256.ComputeHash(Encoding.ASCII.GetBytes(password+salt));
             
-            //  Do this for the testing
-            // var userReturn = user;
-            //
-            // if (!Encoding.ASCII.GetBytes(password).SequenceEqual(Encoding.ASCII.GetBytes(user.PwHash.Split(":")[2])))
-            // {
-            //     throw new ArgumentException("Invalid password");
-            // }
-            //
-            // if (Encoding.ASCII.GetBytes(password).SequenceEqual(Encoding.ASCII.GetBytes(user.PwHash.Split(":")[2])))
-            // {
-            //     userReturn = user;
-            // }
-
-            //return userReturn;
+             if (!computedHash.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
+             {
+                 throw new ArgumentException("Invalid password salt prefix");
+             }
+             
+             if (!computedHashAlt.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
+             {
+                 throw new ArgumentException("Invalid password salt suffix");
+             }
+             
             _currentUser = user;
         }
     }
