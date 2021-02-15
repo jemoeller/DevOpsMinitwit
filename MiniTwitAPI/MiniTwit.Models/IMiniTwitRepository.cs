@@ -13,7 +13,7 @@ namespace MiniTwit.Models
         Task<IEnumerable<Message>> GetAuthorMessages(int authorId);
         Task<IEnumerable<Message>> GetMessagesAsync();
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
-        Task<IEnumerable<TimelineDTO>> Timeline(int per_page, int? currentuser);
+        Task<IEnumerable<TimelineDTO>> Timeline(int per_page);
         Task<long> GetUserId(string username);
         Task FollowUser(string username);
         Task UnfollowUser(string username);

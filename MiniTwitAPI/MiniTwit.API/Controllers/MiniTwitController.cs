@@ -48,10 +48,10 @@ namespace MiniTwit.API.Controllers
             return await _repository.GetUserId(username);
         }
 
-        [HttpGet("timeline/{userid}")]
-        public async Task<IEnumerable<TimelineDTO>> GetTimeline(int? userid)
+        [HttpGet("timeline/")]
+        public async Task<IEnumerable<TimelineDTO>> GetTimeline() 
         {
-            return await _repository.Timeline(30, userid);
+            return await _repository.Timeline(30);
         }
 
         [HttpGet("login/username={username}+password={password}")]
