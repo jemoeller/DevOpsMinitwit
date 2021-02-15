@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using MiniTwit.Entities;
+using System.Threading;
 
 namespace MiniTwit.Models
 {
@@ -19,5 +18,8 @@ namespace MiniTwit.Models
         Task UnfollowUser(string username);
 
         Task Login(string username, string password);
+
+        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+
     }
 }

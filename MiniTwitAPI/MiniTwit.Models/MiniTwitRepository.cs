@@ -174,5 +174,21 @@ namespace MiniTwit.Models
              
             _currentUser = user;
         }
+
+        public async Task<long> registerUser(UserCreateDTO user)
+        {
+            var entity = new User
+            {
+                Username = user.Username,
+                PwHash = user.PwHash,
+                Email = user.Email
+            };
+
+            _context.Users.Add(entity);
+
+            await _context.SaveChangesAsync();
+
+            return entity.UserId;
+        }
     }
 }
