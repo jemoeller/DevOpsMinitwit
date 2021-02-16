@@ -24,6 +24,9 @@ namespace MiniTwit.Entities
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             OnModelCreatingPartial(modelBuilder);//why do we call this method?
+            modelBuilder.Entity<User>()
+                .Property(p => p.UserId)
+                .ValueGeneratedOnAdd();
         }
 
         partial void OnModelCreatingPartial(ModelBuilder modelBuilder);//do we need this?

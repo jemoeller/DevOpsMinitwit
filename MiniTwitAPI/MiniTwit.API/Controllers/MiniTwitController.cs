@@ -69,5 +69,32 @@ namespace MiniTwit.API.Controllers
                 return HttpStatusCode.NotFound;
             }
         }
+
+        [HttpPost("register/u={usern}+pw={pw}+em={email}")]
+        public async Task<HttpStatusCode> Register(string usern, string pw, string email)
+        {
+            try
+            {
+                var dto = new UserCreateDTO()
+                {
+                    Username = usern,
+                    Password = pw,
+                    Email = email
+                };
+                
+                await _repository.RegisterUser(dto);
+                return HttpStatusCode.OK;
+            } 
+            catch (Exception e)
+            {
+                return HttpStatusCode.BadRequest;
+            }
+        }
+
+        [HttpGet("register/password={password}+salt={salt}")]
+        public string Test(string password, string salt)
+        {
+            return _repository.GenerateHashPassword(password, salt);
+        }
     }
 }

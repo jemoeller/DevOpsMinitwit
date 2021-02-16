@@ -19,7 +19,11 @@ namespace MiniTwit.Models
 
         Task Login(string username, string password);
 
-        Task<int> SaveChangesAsync(CancellationToken cancellationToken = default);
+        Task<long> RegisterUser(UserCreateDTO user);
+
+        string GenerateHashPassword(string password, string salt);
+
+        string GenerateHashPassword(string password, int saltSize);
 
     }
 }

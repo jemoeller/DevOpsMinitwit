@@ -162,6 +162,7 @@ namespace MiniTwit.Models
             var computedHash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
             var computedHashAlt = sha256.ComputeHash(Encoding.ASCII.GetBytes(password+salt));
             
+            //Delete one when we find out which is correct
              if (!computedHash.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
              {
                  throw new ArgumentException("Invalid password salt prefix");
@@ -174,17 +175,61 @@ namespace MiniTwit.Models
              
             _currentUser = user;
         }
-
-        public async Task<long> registerUser(UserCreateDTO user)
+        
+        //pbkdf2:sha256:50000$ZuDEoSJ4$d967e378dd774fbf17e4e84b945741e490bf9df1e229646434d15fedb169ce00
+        public string GenerateHashPassword(string password, int saltSize)
         {
+            using var sha256 = SHA256.Create();
+            using var crypto = new RNGCryptoServiceProvider();
+            
+            //Creates random salt of length saltSize, computing hash from salt+password
+            var salt = new byte[saltSize];
+            crypto.GetBytes(salt);
+            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
+            
+            //converts byte[] to strings for text formatting
+            var saltString = Encoding.UTF8.GetString(salt, 0, salt.Length);
+            var hashString = Encoding.UTF8.GetString(hash, 0, hash.Length);
+            
+            //Formatted as existing passwords
+            var formatted = $"pbkdf2:sha256:50000${saltString}${hashString}";
+                               
+            return formatted;
+        }
+        
+        public string GenerateHashPassword(string password, string salt)
+        {
+            using var sha256 = SHA256.Create();
+            
+            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
+            
+            //converts byte[] to strings for text formatting
+  
+            var hashString = Encoding.UTF8.GetString(hash, 0, hash.Length);
+            
+            //Formatted as existing passwords: method$salt$hash
+            var formatted = $"pbkdf2:sha256:50000${salt}${hashString}";
+                               
+            return formatted;
+        }
+
+        public async Task<long> RegisterUser(UserCreateDTO user)
+        {
+
+            // if (await _context.Users.FindAsync(GetUserId(user.Username)) != null)
+            // {
+            //     throw new Exception("User already exists");
+            //
+            // }
+            
             var entity = new User
             {
                 Username = user.Username,
-                PwHash = user.PwHash,
+                PwHash = GenerateHashPassword(user.Password, 8),
                 Email = user.Email
             };
 
-            _context.Users.Add(entity);
+            await _context.Users.AddAsync(entity);
 
             await _context.SaveChangesAsync();
 

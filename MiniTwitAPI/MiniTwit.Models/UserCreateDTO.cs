@@ -12,8 +12,10 @@ namespace MiniTwit.Models
         [Required]
         public string Username;
 
-        public string PwHash;
+        [Required]
+        public string Password;
 
+        [Required]
         public string Email;
     }
 }
