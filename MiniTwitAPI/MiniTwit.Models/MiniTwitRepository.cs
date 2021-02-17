@@ -99,11 +99,12 @@ namespace MiniTwit.Models
             _context.Followers.Remove(follower);
         }
 
-        public async Task<IEnumerable<Follower>> GetFollowers()
+        public async Task<IEnumerable<string>> GetFollowers()
         {
-            var followers = from f in _context.Folloers
-                            where f.WhoId == _currentUser.UserId
-                            select f;
+            var followers = await (from f in _context.Followers
+                                   join u in _context.Users on f.WhomId equals u.UserId
+                                   where f.WhoId == _currentUser.UserId
+                                   select u.Username).ToListAsync();
             return followers;
         }
 
