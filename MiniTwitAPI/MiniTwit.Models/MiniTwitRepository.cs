@@ -140,100 +140,46 @@ namespace MiniTwit.Models
 
             return messages;
         }
-
-        public async Task Login(string username, string password)
-        {
-            var user = await (from u in _context.Users
-                                    where u.Username == username
-                                    select u).FirstOrDefaultAsync();
-
-            if (user == null)
-            {
-                throw new ArgumentException("Invalid username");
-            }
-
-            using SHA256 sha256 = SHA256.Create();
-            
-            
-            //Compares sha256 byte array of input password to byte array of stored hash of password - if not the same, throws exception
-            var storedHash = user.PwHash.Split("$");
-            var salt = storedHash[1];
-            var hashValue = storedHash[2];
-            var computedHash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
-            var computedHashAlt = sha256.ComputeHash(Encoding.ASCII.GetBytes(password+salt));
-            
-            //Delete one when we find out which is correct
-             if (!computedHash.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
-             {
-                 throw new ArgumentException("Invalid password salt prefix");
-             }
-             
-             if (!computedHashAlt.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
-             {
-                 throw new ArgumentException("Invalid password salt suffix");
-             }
-             
-            _currentUser = user;
-        }
         
-        //pbkdf2:sha256:50000$ZuDEoSJ4$d967e378dd774fbf17e4e84b945741e490bf9df1e229646434d15fedb169ce00
-        public string GenerateHashPassword(string password, int saltSize)
+        public string GenerateHash(string password)
         {
             using var sha256 = SHA256.Create();
-            using var crypto = new RNGCryptoServiceProvider();
-            
-            //Creates random salt of length saltSize, computing hash from salt+password
-            var salt = new byte[saltSize];
-            crypto.GetBytes(salt);
-            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
-            
-            //converts byte[] to strings for text formatting
-            var saltString = Encoding.UTF8.GetString(salt, 0, salt.Length);
-            var hashString = Encoding.UTF8.GetString(hash, 0, hash.Length);
-            
-            //Formatted as existing passwords
-            var formatted = $"pbkdf2:sha256:50000${saltString}${hashString}";
-                               
-            return formatted;
-        }
-        
-        public string GenerateHashPassword(string password, string salt)
-        {
-            using var sha256 = SHA256.Create();
-            
-            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
-            
-            //converts byte[] to strings for text formatting
-  
-            var hashString = Encoding.UTF8.GetString(hash, 0, hash.Length);
-            
-            //Formatted as existing passwords: method$salt$hash
-            var formatted = $"pbkdf2:sha256:50000${salt}${hashString}";
-                               
-            return formatted;
+
+            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(password));
+
+            return Encoding.ASCII.GetString(hash, 0, hash.Length);
         }
 
         public async Task<long> RegisterUser(UserCreateDTO user)
         {
+            //FIX: This creates an error everytime you try to register
+            //if (await _context.Users.Select(u => u.Username == user.Username).AnyAsync()) return 0; //username taken
 
-            // if (await _context.Users.FindAsync(GetUserId(user.Username)) != null)
-            // {
-            //     throw new Exception("User already exists");
-            //
-            // }
-            
+            //FIX: ID increments by 2
             var entity = new User
             {
                 Username = user.Username,
-                PwHash = GenerateHashPassword(user.Password, 8),
+                PwHash = GenerateHash(user.Password),
                 Email = user.Email
             };
 
             await _context.Users.AddAsync(entity);
-
             await _context.SaveChangesAsync();
+            return  entity.UserId;
+        }
+        
+        public async Task<long?> Login(string username, string password)
+        {
+            var user = await (from u in _context.Users
+                where u.Username == username
+                select u).FirstOrDefaultAsync();
 
-            return entity.UserId;
+            if (user == null) return null; //wrong username
+
+            if (GenerateHash(password) != user.PwHash) return null; //wrong password
+            _currentUser = user;
+            return _currentUser.UserId;
+
         }
     }
 }

@@ -57,44 +57,24 @@ namespace MiniTwit.API.Controllers
         [HttpGet("login/username={username}+password={password}")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<HttpStatusCode> Login(string username, string password)
+        public async Task<long?> Login(string username, string password)
         {
-            try
-            {
-                await _repository.Login(username, password);
-                return HttpStatusCode.OK;
-            }
-            catch (Exception e)
-            {
-                return HttpStatusCode.NotFound;
-            }
+            var user = await _repository.Login(username, password);
+            return user;
         }
 
         [HttpPost("register/u={usern}+pw={pw}+em={email}")]
-        public async Task<HttpStatusCode> Register(string usern, string pw, string email)
+        public async Task<ActionResult<long>> Register(string usern, string pw, string email)
         {
-            try
+            var dto = new UserCreateDTO()
             {
-                var dto = new UserCreateDTO()
-                {
-                    Username = usern,
-                    Password = pw,
-                    Email = email
-                };
-                
-                await _repository.RegisterUser(dto);
-                return HttpStatusCode.OK;
-            } 
-            catch (Exception e)
-            {
-                return HttpStatusCode.BadRequest;
-            }
-        }
+                Username = usern,
+                Password = pw,
+                Email = email
+            };
 
-        [HttpGet("register/password={password}+salt={salt}")]
-        public string Test(string password, string salt)
-        {
-            return _repository.GenerateHashPassword(password, salt);
+            var userid = await _repository.RegisterUser(dto);
+            return new StatusCodeResult((int) userid);
         }
     }
 }

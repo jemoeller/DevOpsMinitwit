@@ -17,13 +17,15 @@ namespace MiniTwit.Models
         Task FollowUser(string username);
         Task UnfollowUser(string username);
 
-        Task Login(string username, string password);
+        Task<long?> Login(string username, string password);
 
         Task<long> RegisterUser(UserCreateDTO user);
 
-        string GenerateHashPassword(string password, string salt);
+        string GenerateHash(string password);
 
-        string GenerateHashPassword(string password, int saltSize);
+        //string GenerateHashPassword(string password, string salt);
+
+        //string GenerateHashPassword(string password, int saltSize);
 
     }
 }
