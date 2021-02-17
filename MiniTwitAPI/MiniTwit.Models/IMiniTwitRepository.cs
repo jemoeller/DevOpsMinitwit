@@ -17,7 +17,7 @@ namespace MiniTwit.Models
         Task<long> GetUserId(string username);
         Task FollowUser(string username);
         Task UnfollowUser(string username);
-
+        Task<IEnumerable<string>> GetFollowers();
         Task Login(string username, string password);
     }
 }

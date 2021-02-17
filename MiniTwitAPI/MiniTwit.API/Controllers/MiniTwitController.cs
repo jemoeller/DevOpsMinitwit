@@ -54,6 +54,12 @@ namespace MiniTwit.API.Controllers
             return await _repository.Timeline(30);
         }
 
+        [HttpGet("followers/")]
+        public async Task<IEnumerable<string>> GetFollowerts()
+        {
+            return await _repository.GetFollowers();
+        }
+
         [HttpGet("login/username={username}+password={password}")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
