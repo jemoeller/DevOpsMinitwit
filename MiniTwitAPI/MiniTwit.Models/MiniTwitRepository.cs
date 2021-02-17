@@ -217,5 +217,9 @@ namespace MiniTwit.Models
              
             _currentUser = user;
         }
+        public void Logout()
+        {
+            _currentUser = null;
+        }
     }
 }
