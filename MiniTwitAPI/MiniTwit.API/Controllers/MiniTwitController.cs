@@ -30,6 +30,20 @@ namespace MiniTwit.API.Controllers
             return await _repository.GetMessage(id);
         }
 
+        [HttpPost("messages/")]
+        public async Task<ActionResult<long>> AddMessage([FromBody] MessageCreateDTO message)
+        {
+            return await _repository.AddMessage(message);
+        }
+
+        [HttpDelete("messages/{id}")]
+        public async Task<ActionResult> DeleteMessage(long id)
+        {
+            var response = await _repository.DeleteMessage(id);
+
+            return new StatusCodeResult((int)response);
+        }
+
         [HttpGet("messages/")]
         public async Task<IEnumerable<Message>> GetMessages()
         {
