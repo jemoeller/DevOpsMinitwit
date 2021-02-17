@@ -3,8 +3,8 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MiniTwit.Models
 {
-    public class MessageCreateDTO
+    public class FollowDTO
     {
-        public string content { get; set; }
+        public string follow { get; set; }
     }
 }
