@@ -50,16 +50,10 @@ namespace MiniTwit.API.Controllers
             return await _repository.GetMessagesAsync();
         }
 
-        [HttpGet("messages/user/{userid}")]
-        public async Task<IEnumerable<Message>> GetAuthorMessages(int userid)
+        [HttpGet("{username}/")]
+        public async Task<IEnumerable<Message>> GetUserMessages(string username)
         {
-            return await _repository.GetAuthorMessages(userid);
-        }
-
-        [HttpGet("users/{username}")]
-        public async Task<ActionResult<long>> GetUser(string username)
-        {
-            return await _repository.GetUserId(username);
+            return await _repository.GetUserMessages(username);
         }
 
         [HttpGet("timeline/")]
