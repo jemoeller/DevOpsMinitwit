@@ -99,6 +99,14 @@ namespace MiniTwit.Models
             _context.Followers.Remove(follower);
         }
 
+        public async Task<IEnumerable<Follower>> GetFollowers()
+        {
+            var followers = from f in _context.Folloers
+                            where f.WhoId == _currentUser.UserId
+                            select f;
+            return followers;
+        }
+
         //Displays the latest messages of all users, limited by per_page
         public async Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page)
         {
