@@ -83,5 +83,11 @@ namespace MiniTwit.API.Controllers
                 return HttpStatusCode.NotFound;
             }
         }
+
+        [HttpPost("/logout")]
+        public void Logout()
+        {
+            _repository.Logout();
+        }
     }
 }

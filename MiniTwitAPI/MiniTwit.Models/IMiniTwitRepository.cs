@@ -22,5 +22,6 @@ namespace MiniTwit.Models
         Task UnfollowUser(string username);
         Task<IEnumerable<string>> GetFollowers();
         Task Login(string username, string password);
+        void Logout();
     }
 }
