@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 using MiniTwit.Entities;
 
@@ -10,6 +11,8 @@ namespace MiniTwit.Models
     public interface IMiniTwitRepository
     {
         Task<Message> GetMessage(int id);
+        Task<long> AddMessage(MessageCreateDTO message);
+        Task<HttpStatusCode> DeleteMessage(long id);
         Task<IEnumerable<Message>> GetAuthorMessages(int authorId);
         Task<IEnumerable<Message>> GetMessagesAsync();
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
