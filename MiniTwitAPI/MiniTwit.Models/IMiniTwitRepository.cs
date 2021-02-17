@@ -11,10 +11,10 @@ namespace MiniTwit.Models
     public interface IMiniTwitRepository
     {
         Task<Message> GetMessage(int id);
+        Task<IEnumerable<Message>> GetMessagesAsync();
         Task<long> AddMessage(MessageCreateDTO message);
         Task<HttpStatusCode> DeleteMessage(long id);
-        Task<IEnumerable<Message>> GetAuthorMessages(int authorId);
-        Task<IEnumerable<Message>> GetMessagesAsync();
+        Task<IEnumerable<Message>> GetUserMessages(string username);
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
         Task<IEnumerable<TimelineDTO>> Timeline(int per_page);
         Task<long> GetUserId(string username);

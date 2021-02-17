@@ -69,10 +69,12 @@ namespace MiniTwit.Models
             return await message;
         }
 
-        public async Task<IEnumerable<Message>> GetAuthorMessages(int authorId)
+        public async Task<IEnumerable<Message>> GetUserMessages(string username)
         {
+            var userId = await GetUserId(username);
+
             var messages = Task.Run(() => from m in _context.Messages
-                where m.AuthorId == authorId
+                where m.AuthorId == userId
                 select new Message
                 {
                     AuthorId = m.AuthorId,
