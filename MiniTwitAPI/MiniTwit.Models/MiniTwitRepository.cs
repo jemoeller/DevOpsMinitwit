@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using MiniTwit.Entities;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.HttpStatusCode;
 
 namespace MiniTwit.Models
 {
@@ -19,6 +21,37 @@ namespace MiniTwit.Models
         public MiniTwitRepository(IMiniTwitContext context)
         {
             _context = context;
+        }
+
+        public async Task<long> AddMessage(MessageCreateDTO message)
+        {
+            var newMessage = new Message
+            {
+                AuthorId = message.AuthorId,
+                Text = message.Text,
+                PubDate = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                Flagged = 0
+            };
+
+            _context.Messages.Add(newMessage);
+            await _context.SaveChangesAsync();
+
+            return newMessage.MessageId;
+        }
+
+        public async Task<HttpStatusCode> DeleteMessage(long id)
+        {
+            var message = await _context.Messages.FindAsync(id);
+
+            if(message == null)
+            {
+                return NotFound;
+            }
+
+            _context.Messages.Remove(message);
+            await _context.SaveChangesAsync();
+
+            return NoContent;
         }
 
         public async Task<Message> GetMessage(int messageId)
