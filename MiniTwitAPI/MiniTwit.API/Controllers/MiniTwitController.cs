@@ -17,12 +17,14 @@ namespace MiniTwit.API.Controllers
     [Route("[controller]")]
     public class MiniTwitController
     {
-        private readonly IMiniTwitRepository _repository;
+        private readonly IUserRepository _userRepository;
+        private readonly IMessageRepository _messageRepository;
         private int _latest;
 
-        public MiniTwitController(IMiniTwitRepository repository)
+        public MiniTwitController(IUserRepository userRepository, IMessageRepository messageRepository)
         {
-            _repository = repository;
+            _userRepository = userRepository;
+            _messageRepository = messageRepository;
         }
 
         [HttpGet("latest/")]
@@ -36,21 +38,22 @@ namespace MiniTwit.API.Controllers
         {
             _latest = latest;
             if (no == null) no = 30;
-            return await _repository.Timeline(no.Value);
+            return await _userRepository.Timeline(no.Value);
         }
 
         [HttpGet("msgs/{username}")]
-        public async Task<IEnumerable<Message>> GetUserMessages(string username, int no, int latest)
+        public async Task<IEnumerable<Message>> GetUserMessages(string username, int? no, int latest)
         {
             _latest = latest;
-            return await _repository.GetUserMessages(username, no);
+            if (no == null) no = 30;
+            return await _messageRepository.GetUserMessages(username, no.Value);
         }
 
         [HttpPost("msgs/{username}")]
         public async Task<ActionResult<long>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest)
         {
             _latest = latest;
-            return await _repository.AddMessage(request, username);
+            return await _messageRepository.AddMessage(request, username);
         }
 
         [HttpPost("fllws/{username}")]
@@ -59,11 +62,11 @@ namespace MiniTwit.API.Controllers
             var response = HttpStatusCode.BadRequest;
             if (request.follow != null)
             {
-                response = await _repository.FollowUser(request.follow);
+                response = await _userRepository.FollowUser(request.follow);
             }
             else if(request.unfollow != null)
             {
-                response = await _repository.FollowUser(request.follow);
+                response = await _userRepository.FollowUser(request.follow);
             }
 
             return new StatusCodeResult((int)response);
@@ -74,7 +77,7 @@ namespace MiniTwit.API.Controllers
         [ProducesResponseType(Status404NotFound)]
         public async Task<long?> Login([FromBody] LoginDTO dto)
         {
-            var user = await _repository.Login(dto.username, dto.password);
+            var user = await _userRepository.Login(dto.username, dto.password);
             return user;
         }
 
@@ -88,14 +91,14 @@ namespace MiniTwit.API.Controllers
                 Email = registration.email
             };
 
-            var userid = await _repository.RegisterUser(dto);
+            var userid = await _userRepository.RegisterUser(dto);
             return new StatusCodeResult((int) userid);
         }
 
         [HttpPost("logout/")]
         public void Logout()
         {
-            _repository.Logout();
+            _userRepository.Logout();
         }
     }
 }
