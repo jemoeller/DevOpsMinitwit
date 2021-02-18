@@ -183,39 +183,46 @@ namespace MiniTwit.Models
 
             return messages;
         }
+        
+        public string GenerateHash(string password)
+        {
+            using var sha256 = SHA256.Create();
 
-        public async Task Login(string username, string password)
+            var hash = sha256.ComputeHash(Encoding.ASCII.GetBytes(password));
+
+            return Encoding.ASCII.GetString(hash, 0, hash.Length);
+        }
+
+        public async Task<long> RegisterUser(UserCreateDTO user)
+        {
+            //FIX: This creates an error everytime you try to register
+            //if (await _context.Users.Select(u => u.Username == user.Username).AnyAsync()) return 0; //username taken
+
+            //FIX: ID increments by 2
+            var entity = new User
+            {
+                Username = user.Username,
+                PwHash = GenerateHash(user.Password),
+                Email = user.Email
+            };
+
+            await _context.Users.AddAsync(entity);
+            await _context.SaveChangesAsync();
+            return  entity.UserId;
+        }
+        
+        public async Task<long?> Login(string username, string password)
         {
             var user = await (from u in _context.Users
-                                    where u.Username == username
-                                    select u).FirstOrDefaultAsync();
+                where u.Username == username
+                select u).FirstOrDefaultAsync();
 
-            if (user == null)
-            {
-                throw new ArgumentException("Invalid username");
-            }
+            if (user == null) return null; //wrong username
 
-            using SHA256 sha256 = SHA256.Create();
-            
-            
-            //Compares sha256 byte array of input password to byte array of stored hash of password - if not the same, throws exception
-            var storedHash = user.PwHash.Split("$");
-            var salt = storedHash[1];
-            var hashValue = storedHash[2];
-            var computedHash = sha256.ComputeHash(Encoding.ASCII.GetBytes(salt+password));
-            var computedHashAlt = sha256.ComputeHash(Encoding.ASCII.GetBytes(password+salt));
-            
-             if (!computedHash.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
-             {
-                 throw new ArgumentException("Invalid password salt prefix");
-             }
-             
-             if (!computedHashAlt.SequenceEqual(Encoding.ASCII.GetBytes(hashValue)))
-             {
-                 throw new ArgumentException("Invalid password salt suffix");
-             }
-             
+            if (GenerateHash(password) != user.PwHash) return null; //wrong password
             _currentUser = user;
+            return _currentUser.UserId;
+
         }
         public void Logout()
         {

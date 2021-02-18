@@ -68,20 +68,27 @@ namespace MiniTwit.API.Controllers
             return await _repository.GetFollowers();
         }
 
-        [HttpGet("login/username={username}+password={password}")]
+        [HttpGet("login/")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<HttpStatusCode> Login(string username, string password)
+        public async Task<long?> Login([FromBody] LoginDTO dto)
         {
-            try
+            var user = await _repository.Login(dto.username, dto.password);
+            return user;
+        }
+
+        [HttpPost("register/")]
+        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration)
+        {
+            var dto = new UserCreateDTO()
             {
-                await _repository.Login(username, password);
-                return HttpStatusCode.OK;
-            }
-            catch (Exception e)
-            {
-                return HttpStatusCode.NotFound;
-            }
+                Username = registration.username,
+                Password = registration.pwd,
+                Email = registration.email
+            };
+
+            var userid = await _repository.RegisterUser(dto);
+            return new StatusCodeResult((int) userid);
         }
 
         [HttpPost("/logout")]

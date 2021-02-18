@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Net;
 using System.Threading.Tasks;
 using MiniTwit.Entities;
@@ -20,8 +18,15 @@ namespace MiniTwit.Models
         Task<long> GetUserId(string username);
         Task FollowUser(string username);
         Task UnfollowUser(string username);
+
+        Task<long?> Login(string username, string password);
+
+        Task<long> RegisterUser(UserCreateDTO user);
+
+        string GenerateHash(string password);
+        
         Task<IEnumerable<string>> GetFollowers();
-        Task Login(string username, string password);
+
         void Logout();
     }
 }
