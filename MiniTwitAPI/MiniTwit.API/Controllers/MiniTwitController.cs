@@ -35,13 +35,13 @@ namespace MiniTwit.API.Controllers
         public dynamic GetLatest()
         {
             Console.WriteLine("Hello");
-            return new { latest = _httpContextAccessor.HttpContext.Session.GetString("latest") };
+            return new { latest = _httpContextAccessor.HttpContext.Session.GetInt32("latest") };
         }
 
         [HttpGet("msgs/")]
         public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
         {
-            _httpContextAccessor.HttpContext.Session.SetString("latest", "" + latest);
+            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
             return await _userRepository.Timeline(no.Value);
         }
@@ -49,6 +49,7 @@ namespace MiniTwit.API.Controllers
         [HttpGet("msgs/{username}")]
         public async Task<IEnumerable<Message>> GetUserMessages(string username, int? no, int latest)
         {
+            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
             return await _messageRepository.GetUserMessages(username, no.Value);
         }
@@ -75,7 +76,7 @@ namespace MiniTwit.API.Controllers
             return new StatusCodeResult((int)response);
         }
 
-        [HttpGet("login/")]
+        [HttpPost("login/")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
         public async Task<long?> Login([FromBody] LoginDTO dto)
@@ -85,9 +86,9 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("register/")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration)
+        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest)
         {
-            Console.Write("HELOFWOEKRF");
+            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
