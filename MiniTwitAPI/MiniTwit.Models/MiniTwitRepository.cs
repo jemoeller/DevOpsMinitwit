@@ -23,12 +23,14 @@ namespace MiniTwit.Models
             _context = context;
         }
 
-        public async Task<long> AddMessage(MessageCreateDTO message)
+        public async Task<long> AddMessage(MessageCreateDTO message, string username)
         {
+            var userId = await GetUserId(username);
+
             var newMessage = new Message
             {
-                AuthorId = message.AuthorId,
-                Text = message.Text,
+                AuthorId = userId,
+                Text = message.content,
                 PubDate = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
                 Flagged = 0
             };
@@ -69,11 +71,11 @@ namespace MiniTwit.Models
             return await message;
         }
 
-        public async Task<IEnumerable<Message>> GetUserMessages(string username)
+        public async Task<IEnumerable<Message>> GetUserMessages(string username, int per_page)
         {
             var userId = await GetUserId(username);
 
-            var messages = Task.Run(() => from m in _context.Messages
+            var messages = await (from m in _context.Messages
                 where m.AuthorId == userId
                 select new Message
                 {
@@ -82,8 +84,9 @@ namespace MiniTwit.Models
                     PubDate = m.PubDate,
                     Flagged = m.Flagged,
                     Text = m.Text
-                });
-            return await messages;
+                }).Take(per_page).ToListAsync();
+
+            return messages;
         }
 
         public async Task<IEnumerable<Message>> GetMessagesAsync()
@@ -110,7 +113,7 @@ namespace MiniTwit.Models
             return user_id;
         }
 
-        public async Task FollowUser(string username)
+        public async Task<HttpStatusCode> FollowUser(string username)
         {
             var WhomId = await GetUserId(username);
 
@@ -121,9 +124,12 @@ namespace MiniTwit.Models
             };
 
             _context.Followers.Add(follower);
+            await _context.SaveChangesAsync();
+
+            return OK;
         }
 
-        public async Task UnfollowUser(string username)
+        public async Task<HttpStatusCode> UnfollowUser(string username)
         {
             var WhomId = await GetUserId(username);
 
@@ -132,6 +138,9 @@ namespace MiniTwit.Models
                 select f).FirstOrDefault();
 
             _context.Followers.Remove(follower);
+            await _context.SaveChangesAsync();
+
+            return OK;
         }
 
         public async Task<IEnumerable<string>> GetFollowers()
