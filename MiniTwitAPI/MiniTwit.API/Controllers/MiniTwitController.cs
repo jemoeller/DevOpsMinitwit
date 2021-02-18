@@ -32,10 +32,11 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("msgs/")]
-        public async Task<IEnumerable<TimelineDTO>> GetMessages(int no, int latest)
+        public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
         {
             _latest = latest;
-            return await _repository.Timeline(no);
+            if (no == null) no = 30;
+            return await _repository.Timeline(no.Value);
         }
 
         [HttpGet("msgs/{username}")]
@@ -55,18 +56,18 @@ namespace MiniTwit.API.Controllers
         [HttpPost("fllws/{username}")]
         public async Task<ActionResult> FollowUser([FromBody] FollowDTO request)
         {
-            var response = await _repository.FollowUser(request.follow);
+            var response = HttpStatusCode.BadRequest;
+            if (request.follow != null)
+            {
+                response = await _repository.FollowUser(request.follow);
+            }
+            else if(request.unfollow != null)
+            {
+                response = await _repository.FollowUser(request.follow);
+            }
 
             return new StatusCodeResult((int)response);
         }
-
-        //[HttpPost("fllws/{username}")]
-        //public async Task<ActionResult> UnfollowUser([FromBody] UnfollowDTO request)
-        //{
-        //    var response = await _repository.UnfollowUser(request.follow);
-
-        //    return new StatusCodeResult((int)response);
-        //}
 
         [HttpGet("login/")]
         [ProducesResponseType(Status200OK)]
