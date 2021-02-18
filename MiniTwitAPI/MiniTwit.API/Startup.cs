@@ -35,6 +35,7 @@ namespace MiniTwit.API
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddControllers();
+            services.AddHttpContextAccessor();
             services.AddSwaggerGen(c =>
             {
                 c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiniTwit.API", Version = "v1" });

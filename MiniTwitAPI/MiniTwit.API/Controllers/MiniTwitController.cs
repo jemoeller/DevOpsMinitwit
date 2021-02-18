@@ -17,26 +17,31 @@ namespace MiniTwit.API.Controllers
     [Route("[controller]")]
     public class MiniTwitController
     {
+        private IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
         private readonly IMessageRepository _messageRepository;
-        private int _latest;
 
-        public MiniTwitController(IUserRepository userRepository, IMessageRepository messageRepository)
+        public MiniTwitController(
+            IUserRepository userRepository, 
+            IMessageRepository messageRepository,
+            IHttpContextAccessor httpContextAccessor)
         {
             _userRepository = userRepository;
             _messageRepository = messageRepository;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("latest/")]
         public dynamic GetLatest()
         {
-            return new { latest = _latest };
+            Console.WriteLine("Hello");
+            return new { latest = _httpContextAccessor.HttpContext.Session.GetString("latest") };
         }
 
         [HttpGet("msgs/")]
         public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
         {
-            _latest = latest;
+            _httpContextAccessor.HttpContext.Session.SetString("latest", "" + latest);
             if (no == null) no = 30;
             return await _userRepository.Timeline(no.Value);
         }
@@ -44,7 +49,6 @@ namespace MiniTwit.API.Controllers
         [HttpGet("msgs/{username}")]
         public async Task<IEnumerable<Message>> GetUserMessages(string username, int? no, int latest)
         {
-            _latest = latest;
             if (no == null) no = 30;
             return await _messageRepository.GetUserMessages(username, no.Value);
         }
@@ -52,7 +56,6 @@ namespace MiniTwit.API.Controllers
         [HttpPost("msgs/{username}")]
         public async Task<ActionResult<long>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest)
         {
-            _latest = latest;
             return await _messageRepository.AddMessage(request, username);
         }
 
@@ -84,6 +87,7 @@ namespace MiniTwit.API.Controllers
         [HttpPost("register/")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration)
         {
+            Console.Write("HELOFWOEKRF");
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
@@ -92,7 +96,8 @@ namespace MiniTwit.API.Controllers
             };
 
             var userid = await _userRepository.RegisterUser(dto);
-            return new StatusCodeResult((int) userid);
+
+            return new StatusCodeResult((int)HttpStatusCode.OK);
         }
 
         [HttpPost("logout/")]
