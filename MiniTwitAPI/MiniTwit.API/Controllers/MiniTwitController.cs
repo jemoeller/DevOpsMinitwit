@@ -30,51 +30,71 @@ namespace MiniTwit.API.Controllers
             return await _repository.GetMessage(id);
         }
 
+        [HttpPost("messages/")]
+        public async Task<ActionResult<long>> AddMessage([FromBody] MessageCreateDTO message)
+        {
+            return await _repository.AddMessage(message);
+        }
+
+        [HttpDelete("messages/{id}")]
+        public async Task<ActionResult> DeleteMessage(long id)
+        {
+            var response = await _repository.DeleteMessage(id);
+
+            return new StatusCodeResult((int)response);
+        }
+
         [HttpGet("messages/")]
         public async Task<IEnumerable<Message>> GetMessages()
         {
             return await _repository.GetMessagesAsync();
         }
 
-        [HttpGet("messages/user/{userid}")]
-        public async Task<IEnumerable<Message>> GetAuthorMessages(int userid)
+        [HttpGet("{username}/")]
+        public async Task<IEnumerable<Message>> GetUserMessages(string username)
         {
-            return await _repository.GetAuthorMessages(userid);
+            return await _repository.GetUserMessages(username);
         }
 
-        [HttpGet("users/{username}")]
-        public async Task<ActionResult<long>> GetUser(string username)
+        [HttpGet("timeline/")]
+        public async Task<IEnumerable<TimelineDTO>> GetTimeline() 
         {
-            return await _repository.GetUserId(username);
+            return await _repository.Timeline(30);
         }
 
-        [HttpGet("timeline/{userid}")]
-        public async Task<IEnumerable<TimelineDTO>> GetTimeline(int? userid)
+        [HttpGet("followers/")]
+        public async Task<IEnumerable<string>> GetFollowerts()
         {
-            return await _repository.Timeline(30, userid);
+            return await _repository.GetFollowers();
         }
 
-        [HttpGet("login/username={username}+password={password}")]
+        [HttpGet("login/")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<long?> Login(string username, string password)
+        public async Task<long?> Login([FromBody] LoginDTO dto)
         {
-            var user = await _repository.Login(username, password);
+            var user = await _repository.Login(dto.username, dto.password);
             return user;
         }
 
-        [HttpPost("register/u={usern}+pw={pw}+em={email}")]
-        public async Task<ActionResult<long>> Register(string usern, string pw, string email)
+        [HttpPost("register/")]
+        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration)
         {
             var dto = new UserCreateDTO()
             {
-                Username = usern,
-                Password = pw,
-                Email = email
+                Username = registration.username,
+                Password = registration.pwd,
+                Email = registration.email
             };
 
             var userid = await _repository.RegisterUser(dto);
             return new StatusCodeResult((int) userid);
+        }
+
+        [HttpPost("/logout")]
+        public void Logout()
+        {
+            _repository.Logout();
         }
     }
 }

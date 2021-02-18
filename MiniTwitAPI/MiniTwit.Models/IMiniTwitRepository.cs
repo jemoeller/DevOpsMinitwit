@@ -1,18 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Net;
 using System.Threading.Tasks;
 using MiniTwit.Entities;
-using System.Threading;
 
 namespace MiniTwit.Models
 {
     public interface IMiniTwitRepository
     {
         Task<Message> GetMessage(int id);
-        Task<IEnumerable<Message>> GetAuthorMessages(int authorId);
         Task<IEnumerable<Message>> GetMessagesAsync();
+        Task<long> AddMessage(MessageCreateDTO message);
+        Task<HttpStatusCode> DeleteMessage(long id);
+        Task<IEnumerable<Message>> GetUserMessages(string username);
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
-        Task<IEnumerable<TimelineDTO>> Timeline(int per_page, int? currentuser);
+        Task<IEnumerable<TimelineDTO>> Timeline(int per_page);
         Task<long> GetUserId(string username);
         Task FollowUser(string username);
         Task UnfollowUser(string username);
@@ -22,10 +24,9 @@ namespace MiniTwit.Models
         Task<long> RegisterUser(UserCreateDTO user);
 
         string GenerateHash(string password);
+        
+        Task<IEnumerable<string>> GetFollowers();
 
-        //string GenerateHashPassword(string password, string salt);
-
-        //string GenerateHashPassword(string password, int saltSize);
-
+        void Logout();
     }
 }

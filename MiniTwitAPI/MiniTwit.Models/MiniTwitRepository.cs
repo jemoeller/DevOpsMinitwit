@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 using Microsoft.Data.Sqlite;
 using MiniTwit.Entities;
 using Microsoft.EntityFrameworkCore;
+using static System.Net.HttpStatusCode;
 
 namespace MiniTwit.Models
 {
@@ -19,6 +21,37 @@ namespace MiniTwit.Models
         public MiniTwitRepository(IMiniTwitContext context)
         {
             _context = context;
+        }
+
+        public async Task<long> AddMessage(MessageCreateDTO message)
+        {
+            var newMessage = new Message
+            {
+                AuthorId = message.AuthorId,
+                Text = message.Text,
+                PubDate = DateTimeOffset.UtcNow.ToUnixTimeSeconds(),
+                Flagged = 0
+            };
+
+            _context.Messages.Add(newMessage);
+            await _context.SaveChangesAsync();
+
+            return newMessage.MessageId;
+        }
+
+        public async Task<HttpStatusCode> DeleteMessage(long id)
+        {
+            var message = await _context.Messages.FindAsync(id);
+
+            if(message == null)
+            {
+                return NotFound;
+            }
+
+            _context.Messages.Remove(message);
+            await _context.SaveChangesAsync();
+
+            return NoContent;
         }
 
         public async Task<Message> GetMessage(int messageId)
@@ -36,10 +69,12 @@ namespace MiniTwit.Models
             return await message;
         }
 
-        public async Task<IEnumerable<Message>> GetAuthorMessages(int authorId)
+        public async Task<IEnumerable<Message>> GetUserMessages(string username)
         {
+            var userId = await GetUserId(username);
+
             var messages = Task.Run(() => from m in _context.Messages
-                where m.AuthorId == authorId
+                where m.AuthorId == userId
                 select new Message
                 {
                     AuthorId = m.AuthorId,
@@ -81,7 +116,7 @@ namespace MiniTwit.Models
 
             var follower = new Follower
             {
-                WhoId = 2,
+                WhoId = _currentUser.UserId,
                 WhomId = WhomId
             };
 
@@ -93,10 +128,19 @@ namespace MiniTwit.Models
             var WhomId = await GetUserId(username);
 
             var follower = (from f in _context.Followers
-                where f.WhoId == 2 && f.WhomId == WhomId
+                where f.WhoId == _currentUser.UserId && f.WhomId == WhomId
                 select f).FirstOrDefault();
 
             _context.Followers.Remove(follower);
+        }
+
+        public async Task<IEnumerable<string>> GetFollowers()
+        {
+            var followers = await (from f in _context.Followers
+                                   join u in _context.Users on f.WhomId equals u.UserId
+                                   where f.WhoId == _currentUser.UserId
+                                   select u.Username).ToListAsync();
+            return followers;
         }
 
         //Displays the latest messages of all users, limited by per_page
@@ -115,21 +159,20 @@ namespace MiniTwit.Models
             return messages;
         }
 
-        public async Task<IEnumerable<TimelineDTO>>
-            Timeline(int per_page, int? currentuser) //TODO:pls deletion of the currentuser
+        public async Task<IEnumerable<TimelineDTO>> Timeline(int per_page)
         {
-            if (currentuser == null)
+            if (_currentUser == null)
             {
                 return await PublicTimeline(per_page);
             }
 
             var messages = await Task.Run(() => (from m in _context.Messages
                 join u in _context.Users on m.AuthorId equals u.UserId
-                where m.Flagged == 0 && m.AuthorId == u.UserId && (
-                    u.UserId == currentuser || _context.Followers
-                        .Where(f => f.WhomId == currentuser)
-                        .Select(f => f.WhoId)
-                        .Contains(u.UserId)
+                where m.Flagged == 0 && (
+                    u.UserId == _currentUser.UserId || _context.Followers
+                                                        .Where(f => f.WhoId == _currentUser.UserId)
+                                                        .Select(f => f.WhomId)
+                                                        .Contains(u.UserId)
                 )
                 orderby m.PubDate descending
                 select new TimelineDTO
@@ -180,6 +223,10 @@ namespace MiniTwit.Models
             _currentUser = user;
             return _currentUser.UserId;
 
+        }
+        public void Logout()
+        {
+            _currentUser = null;
         }
     }
 }
