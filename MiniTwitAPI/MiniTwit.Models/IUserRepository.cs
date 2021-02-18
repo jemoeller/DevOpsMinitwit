@@ -6,13 +6,8 @@ using MiniTwit.Entities;
 
 namespace MiniTwit.Models
 {
-    public interface IMiniTwitRepository
+    public interface IUserRepository
     {
-        Task<Message> GetMessage(int id);
-        Task<IEnumerable<Message>> GetMessagesAsync();
-        Task<long> AddMessage(MessageCreateDTO message, string username);
-        Task<HttpStatusCode> DeleteMessage(long id);
-        Task<IEnumerable<Message>> GetUserMessages(string username, int per_page);
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
         Task<IEnumerable<TimelineDTO>> Timeline(int per_page);
         Task<long> GetUserId(string username);

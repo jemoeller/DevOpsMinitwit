@@ -32,7 +32,8 @@ namespace MiniTwit.API
         {
             services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=MiniTwit.db"));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
-            services.AddScoped<IMiniTwitRepository, MiniTwitRepository>();
+            services.AddScoped<IMessageRepository, MessageRepository>();
+            services.AddScoped<IUserRepository, UserRepository>();
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
