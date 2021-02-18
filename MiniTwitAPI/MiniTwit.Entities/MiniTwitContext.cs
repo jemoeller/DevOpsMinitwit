@@ -19,6 +19,8 @@ namespace MiniTwit.Entities
             
         }
 
+
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             OnModelCreatingPartial(modelBuilder);//why do we call this method?
