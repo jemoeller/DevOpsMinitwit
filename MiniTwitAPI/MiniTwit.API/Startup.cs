@@ -35,6 +35,8 @@ namespace MiniTwit.API
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddControllers();
+            services.AddDistributedMemoryCache();
+            services.AddSession();
             services.AddHttpContextAccessor();
             services.AddSwaggerGen(c =>
             {
@@ -54,7 +56,11 @@ namespace MiniTwit.API
 
             app.UseHttpsRedirection();
 
+            app.UseStaticFiles();
+
             app.UseRouting();
+
+            app.UseSession();
 
             app.UseAuthorization();
 
