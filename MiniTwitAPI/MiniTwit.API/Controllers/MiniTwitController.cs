@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 using MiniTwit.Entities;
 using MiniTwit.Models;
 using static Microsoft.AspNetCore.Http.StatusCodes;
@@ -15,33 +13,30 @@ namespace MiniTwit.API.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MiniTwitController
+    public class MiniTwitController : ControllerBase
     {
-        private IHttpContextAccessor _httpContextAccessor;
         private readonly IUserRepository _userRepository;
         private readonly IMessageRepository _messageRepository;
 
         public MiniTwitController(
             IUserRepository userRepository, 
-            IMessageRepository messageRepository,
-            IHttpContextAccessor httpContextAccessor)
+            IMessageRepository messageRepository)
         {
             _userRepository = userRepository;
             _messageRepository = messageRepository;
-            _httpContextAccessor = httpContextAccessor;
         }
 
         [HttpGet("latest/")]
         public dynamic GetLatest()
         {
             Console.WriteLine("Hello");
-            return new { latest = _httpContextAccessor.HttpContext.Session.GetInt32("latest") };
+            return new { latest = HttpContext.Session.GetInt32("latest") };
         }
 
         [HttpGet("msgs/")]
         public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
         {
-            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
+            HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
             return await _userRepository.Timeline(no.Value);
         }
@@ -49,7 +44,7 @@ namespace MiniTwit.API.Controllers
         [HttpGet("msgs/{username}")]
         public async Task<IEnumerable<Message>> GetUserMessages(string username, int? no, int latest)
         {
-            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
+            HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
             return await _messageRepository.GetUserMessages(username, no.Value);
         }
@@ -61,16 +56,16 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("fllws/{username}")]
-        public async Task<ActionResult> FollowUser([FromBody] FollowDTO request)
+        public async Task<ActionResult> FollowUser([FromBody] FollowDTO request, string username)
         {
             var response = HttpStatusCode.BadRequest;
             if (request.follow != null)
             {
-                response = await _userRepository.FollowUser(request.follow);
+                response = await _userRepository.FollowUser(username, request.follow);
             }
             else if(request.unfollow != null)
             {
-                response = await _userRepository.FollowUser(request.follow);
+                response = await _userRepository.UnfollowUser(username, request.unfollow);
             }
 
             return new StatusCodeResult((int)response);
@@ -88,7 +83,7 @@ namespace MiniTwit.API.Controllers
         [HttpPost("register/")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest)
         {
-            _httpContextAccessor.HttpContext.Session.SetInt32("latest", latest);
+            HttpContext.Session.SetInt32("latest", latest);
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
@@ -98,7 +93,7 @@ namespace MiniTwit.API.Controllers
 
             var userid = await _userRepository.RegisterUser(dto);
 
-            return new StatusCodeResult((int)HttpStatusCode.OK);
+            return userid;
         }
 
         [HttpPost("logout/")]

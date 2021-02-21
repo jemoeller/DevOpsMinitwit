@@ -31,13 +31,14 @@ namespace MiniTwit.Models
             return user_id;
         }
 
-        public async Task<HttpStatusCode> FollowUser(string username)
+        public async Task<HttpStatusCode> FollowUser(string username, string followName)
         {
-            var WhomId = await GetUserId(username);
+            var WhoId = await GetUserId(username);
+            var WhomId = await GetUserId(followName);
 
             var follower = new Follower
             {
-                WhoId = _currentUser.UserId,
+                WhoId = WhoId,
                 WhomId = WhomId
             };
 
@@ -47,12 +48,13 @@ namespace MiniTwit.Models
             return OK;
         }
 
-        public async Task<HttpStatusCode> UnfollowUser(string username)
+        public async Task<HttpStatusCode> UnfollowUser(string username, string unfollowName)
         {
-            var WhomId = await GetUserId(username);
+            var WhoId = await GetUserId(username);
+            var WhomId = await GetUserId(unfollowName);
 
             var follower = (from f in _context.Followers
-                            where f.WhoId == _currentUser.UserId && f.WhomId == WhomId
+                            where f.WhoId == WhoId && f.WhomId == WhomId
                             select f).FirstOrDefault();
 
             _context.Followers.Remove(follower);
