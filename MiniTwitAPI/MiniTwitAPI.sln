@@ -5,13 +5,9 @@ VisualStudioVersion = 16.0.31005.135
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit.API", "MiniTwit.API\MiniTwit.API.csproj", "{24AD79DD-B737-4D19-A5ED-33CC68F400B1}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit.Blazor", "MiniTwit.Blazor\MiniTwit.Blazor.csproj", "{8E7352A3-45AA-4ADB-86A5-F4BB4B11EBDC}"
-EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit.Entities", "MiniTwit.Entities\MiniTwit.Entities.csproj", "{2C1133E7-4DB8-473B-8457-80727EE1AF27}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit.Models", "MiniTwit.Models\MiniTwit.Models.csproj", "{AAF9A789-C848-4F7A-BEBF-08F4FEE5FDF9}"
-EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "MiniTwit.Shared", "MiniTwit.Shared\MiniTwit.Shared.csproj", "{765F73AA-BA12-4C4B-A7B6-5E88136C87DB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
