@@ -11,8 +11,8 @@ namespace MiniTwit.Models
         Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page);
         Task<IEnumerable<TimelineDTO>> Timeline(int per_page);
         Task<long> GetUserId(string username);
-        Task<HttpStatusCode> FollowUser(string username);
-        Task<HttpStatusCode> UnfollowUser(string username);
+        Task<HttpStatusCode> FollowUser(string username, string followName);
+        Task<HttpStatusCode> UnfollowUser(string username, string unfollowName);
         Task<long?> Login(string username, string password);
         Task<long> RegisterUser(UserCreateDTO user);
         string GenerateHash(string password);
