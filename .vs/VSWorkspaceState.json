@@ -1,7 +1,12 @@
 {
   "ExpandedNodes": [
-    ""
+    "",
+    "\\MiniTwitAPI",
+    "\\MiniTwitAPI\\MiniTwit.API",
+    "\\MiniTwitAPI\\MiniTwit.Entities",
+    "\\MiniTwitAPI\\MiniTwit.Models",
+    "\\MiniTwitWebApi"
   ],
-  "SelectedNode": "\\minitwit.py",
+  "SelectedNode": "\\MiniTwitAPI\\MiniTwit.Entities\\MiniTwitContext.cs",
   "PreviewInSolutionExplorer": false
 }
