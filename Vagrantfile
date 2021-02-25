@@ -9,7 +9,7 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	config.vm.network :forwarded_port, guest: 5432, host: 5432
         override.nfs.functional = false
         override.vm.allowed_synced_folder_types = :rsync
-        provider.token = 'bdad1f0a2246b6668ce5f2cdc39f61ac063eca4166fbf295ae363e2eff63fcc3'
+        provider.token = '{YOUR TOKEN}'
         provider.image = 'ubuntu-18-04-x64'
         provider.region = 'nyc1'
         provider.size = 's-1vcpu-1gb'
