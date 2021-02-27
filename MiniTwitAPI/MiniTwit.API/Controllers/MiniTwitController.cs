@@ -12,7 +12,7 @@ using static Microsoft.AspNetCore.Http.StatusCodes;
 namespace MiniTwit.API.Controllers
 {
     [ApiController]
-    [Route("[controller]")]
+    [Route("/")]
     public class MiniTwitController : ControllerBase
     {
         private readonly IUserRepository _userRepository;
@@ -26,10 +26,15 @@ namespace MiniTwit.API.Controllers
             _messageRepository = messageRepository;
         }
 
+        [HttpGet]
+        public dynamic GetStatus()
+        {
+            return new { go_to = "/swagger/index.html" };
+        }
+
         [HttpGet("latest/")]
         public dynamic GetLatest()
         {
-            Console.WriteLine("Hello");
             return new { latest = HttpContext.Session.GetInt32("latest") };
         }
 
