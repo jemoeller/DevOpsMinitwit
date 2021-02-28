@@ -86,9 +86,10 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("register/")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest)
+        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest = 0)
         {
-            HttpContext.Session.SetInt32("latest", latest);
+            //TODO: Make HttpContext work with Blazor
+            //HttpContext.Session.SetInt32("latest", latest);
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
