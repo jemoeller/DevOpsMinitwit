@@ -41,7 +41,7 @@ namespace MiniTwit.API.Controllers
         [HttpGet("msgs/")]
         public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
         {
-            HttpContext.Session.SetInt32("latest", latest);
+            //HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
             return await _userRepository.Timeline(no.Value);
         }
