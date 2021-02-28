@@ -1,5 +1,8 @@
 ﻿@page "/login"
 
+@using MiniTwit.API.Controllers
+@inject MiniTwitController controller
+
 <h2>Sign In</h2>
 @if (@error != null)
 {
@@ -18,10 +21,19 @@
     private string username = "";
     private string password = "";
 
-    private void Signin()
+    private async void Signin()
     {
+        error = null;
         if (username == "") error = "Please enter a username";
         if (password == "") error = "Please enter a password";
-        Console.WriteLine(username + " " + password);
+        if (error == null)
+        {
+            var user = await controller.Login(new Models.LoginDTO
+            {
+                username = username,
+                password = password
+            });
+            Console.WriteLine(user);
+        }
     }
 }
