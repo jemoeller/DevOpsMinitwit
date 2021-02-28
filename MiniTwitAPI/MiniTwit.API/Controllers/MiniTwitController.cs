@@ -106,5 +106,10 @@ namespace MiniTwit.API.Controllers
         {
             _userRepository.Logout();
         }
+
+        public User GetCurrentUser()
+        {
+            return null;
+        }
     }
 }
