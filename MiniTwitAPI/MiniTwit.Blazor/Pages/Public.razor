@@ -11,6 +11,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        messages = await controller.GetMessages(null, 1337);
+        messages = await controller.GetMessages();
     }
 }

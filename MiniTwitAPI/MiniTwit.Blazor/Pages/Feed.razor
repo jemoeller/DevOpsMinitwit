@@ -18,7 +18,7 @@
         currentUser = controller.GetCurrentUser();
         if (currentUser == null) NavManager.NavigateTo("/public");
 
-        messages = controller.GetMessages();
+        messages = await controller.GetMessages();
     }
 
 }
