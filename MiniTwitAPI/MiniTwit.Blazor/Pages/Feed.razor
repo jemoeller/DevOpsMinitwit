@@ -1,0 +1,24 @@
+@page"/"
+@using MiniTwit.API.Controllers
+@using MiniTwit.Entities
+@using MiniTwit.Models
+@inject MiniTwitController controller
+@inject NavigationManager NavManager
+
+
+
+
+@code{
+
+    public User currentUser = null;
+    public IEnumerable<TimelineDTO> messages;
+    
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = controller.GetCurrentUser();
+        if (currentUser == null) NavManager.NavigateTo("/public");
+
+        messages = controller.GetMessages();
+    }
+
+}

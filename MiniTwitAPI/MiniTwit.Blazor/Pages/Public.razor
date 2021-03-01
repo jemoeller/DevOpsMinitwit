@@ -12,6 +12,5 @@
     protected override async Task OnInitializedAsync()
     {
         messages = await controller.GetMessages(null, 1337);
-        Console.WriteLine(messages.Count());
     }
 }

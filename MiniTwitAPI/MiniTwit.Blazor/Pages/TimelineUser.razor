@@ -1,0 +1,19 @@
+@page "/{username}"
+@using MiniTwit.Models
+@using MiniTwit.API.Controllers
+@inject MiniTwitController controller
+
+<Timeline message="@messages"/>
+
+@code {
+
+    public IEnumerable<TimelineDTO> messages;
+    
+    [Parameter] 
+    public String username { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        messages = await controller.GetUserMessages(username, null, controller.GetLatest() + 1);
+    }
+}

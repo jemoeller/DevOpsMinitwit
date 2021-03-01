@@ -16,7 +16,6 @@ namespace MiniTwit.Models
     public class UserRepository : IUserRepository
     {
         private readonly IMiniTwitContext _context;
-        private User _currentUser;
 
         public UserRepository(IMiniTwitContext context)
         {
@@ -63,15 +62,6 @@ namespace MiniTwit.Models
             return OK;
         }
 
-        public async Task<IEnumerable<string>> GetFollowers()
-        {
-            var followers = await (from f in _context.Followers
-                                   join u in _context.Users on f.WhomId equals u.UserId
-                                   where f.WhoId == _currentUser.UserId
-                                   select u.Username).ToListAsync();
-            return followers;
-        }
-
         public async Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page)
         {
             var messages = await Task.Run(() => (from m in _context.Messages
@@ -87,18 +77,13 @@ namespace MiniTwit.Models
             return messages;
         }
 
-        public async Task<IEnumerable<TimelineDTO>> Timeline(int per_page)
+        public async Task<IEnumerable<TimelineDTO>> Timeline(int per_page, int userid)
         {
-            if (_currentUser == null)
-            {
-                return await PublicTimeline(per_page);
-            }
-
             var messages = await Task.Run(() => (from m in _context.Messages
                                                  join u in _context.Users on m.AuthorId equals u.UserId
                                                  where m.Flagged == 0 && (
-                                                     u.UserId == _currentUser.UserId || _context.Followers
-                                                                                         .Where(f => f.WhoId == _currentUser.UserId)
+                                                     u.UserId == userid || _context.Followers
+                                                                                         .Where(f => f.WhoId == userid)
                                                                                          .Select(f => f.WhomId)
                                                                                          .Contains(u.UserId)
                                                  )
@@ -139,7 +124,7 @@ namespace MiniTwit.Models
             return entity.UserId;
         }
 
-        public async Task<long?> Login(string username, string password)
+        public async Task<User> Login(string username, string password)
         {
             var user = await (from u in _context.Users
                               where u.Username == username
@@ -148,13 +133,7 @@ namespace MiniTwit.Models
             if (user == null) return null; //wrong username
 
             if (GenerateHash(password) != user.PwHash) return null; //wrong password
-            _currentUser = user;
-            return _currentUser.UserId;
-
-        }
-        public void Logout()
-        {
-            _currentUser = null;
+            return user;
         }
     }
 }

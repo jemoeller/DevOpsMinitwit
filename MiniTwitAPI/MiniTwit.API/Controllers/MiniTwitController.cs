@@ -43,11 +43,11 @@ namespace MiniTwit.API.Controllers
         {
             //HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
-            return await _userRepository.Timeline(no.Value);
+            return await _userRepository.Timeline(no.Value, (int) GetCurrentUser().UserId);
         }
 
         [HttpGet("msgs/{username}")]
-        public async Task<IEnumerable<Message>> GetUserMessages(string username, int? no, int latest)
+        public async Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int? no, int latest)
         {
             HttpContext.Session.SetInt32("latest", latest);
             if (no == null) no = 30;
@@ -82,7 +82,8 @@ namespace MiniTwit.API.Controllers
         public async Task<long?> Login([FromBody] LoginDTO dto)
         {
             var user = await _userRepository.Login(dto.username, dto.password);
-            return user;
+            //currentuser = user;
+            return user.UserId;
         }
 
         [HttpPost("register/")]
@@ -105,11 +106,13 @@ namespace MiniTwit.API.Controllers
         [HttpPost("logout/")]
         public void Logout()
         {
-            _userRepository.Logout();
+            //_userRepository.Logout();
+            //Currentuser = null;
         }
 
         public User GetCurrentUser()
         {
+            //return currentuser;
             return null;
         }
     }

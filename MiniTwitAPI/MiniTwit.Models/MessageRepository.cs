@@ -70,19 +70,17 @@ namespace MiniTwit.Models
             return await message;
         }
 
-        public async Task<IEnumerable<Message>> GetUserMessages(string username, int per_page)
+        public async Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int per_page)
         {
             var userId = await GetUserId(username);
 
             var messages = await (from m in _context.Messages
-                                  where m.AuthorId == userId
-                                  select new Message
+                                        join u in _context.Users on m.AuthorId equals u.UserId
+                                        where m.AuthorId == userId
+                                  select new TimelineDTO
                                   {
-                                      AuthorId = m.AuthorId,
-                                      MessageId = m.MessageId,
-                                      PubDate = m.PubDate,
-                                      Flagged = m.Flagged,
-                                      Text = m.Text
+                                      message = m,
+                                      user = u
                                   }).Take(per_page).ToListAsync();
 
             return messages;
