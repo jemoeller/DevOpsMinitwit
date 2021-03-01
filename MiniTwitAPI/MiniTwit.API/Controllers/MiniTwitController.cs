@@ -39,30 +39,30 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("msgs/")]
-        public async Task<IEnumerable<TimelineDTO>> GetMessages(int? no, int latest)
+        public async Task<IEnumerable<TimelineDTO>> GetMessages(int no = 30, int latest = 0)
         {
-            //HttpContext.Session.SetInt32("latest", latest);
-            if (no == null) no = 30;
-            return await _userRepository.Timeline(no.Value, (int) GetCurrentUser().UserId);
+            HttpContext.Session.SetInt32("latest", latest);
+            return await _userRepository.Timeline(no, (int) GetCurrentUser().UserId);
         }
 
         [HttpGet("msgs/{username}")]
-        public async Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int? no, int latest)
+        public async Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int no = 30, int latest = 0)
         {
             HttpContext.Session.SetInt32("latest", latest);
-            if (no == null) no = 30;
-            return await _messageRepository.GetUserMessages(username, no.Value);
+            return await _messageRepository.GetUserMessages(username, no);
         }
 
         [HttpPost("msgs/{username}")]
-        public async Task<ActionResult<long>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest)
+        public async Task<ActionResult<long>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
         {
+            HttpContext.Session.SetInt32("latest", latest);
             return await _messageRepository.AddMessage(request, username);
         }
 
         [HttpPost("fllws/{username}")]
-        public async Task<ActionResult> FollowUser([FromBody] FollowDTO request, string username)
+        public async Task<ActionResult> FollowUser([FromBody] FollowDTO request, string username, int latest = 0)
         {
+            HttpContext.Session.SetInt32("latest", latest);
             var response = HttpStatusCode.BadRequest;
             if (request.follow != null)
             {
@@ -79,8 +79,9 @@ namespace MiniTwit.API.Controllers
         [HttpPost("login/")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<long?> Login([FromBody] LoginDTO dto)
+        public async Task<long?> Login([FromBody] LoginDTO dto, int latest = 0)
         {
+            HttpContext.Session.SetInt32("latest", latest);
             var user = await _userRepository.Login(dto.username, dto.password);
             //currentuser = user;
             return user.UserId;
@@ -89,8 +90,7 @@ namespace MiniTwit.API.Controllers
         [HttpPost("register/")]
         public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest = 0)
         {
-            //TODO: Make HttpContext work with Blazor
-            //HttpContext.Session.SetInt32("latest", latest);
+            HttpContext.Session.SetInt32("latest", latest);
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
@@ -104,10 +104,10 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("logout/")]
-        public void Logout()
+        public void Logout(int latest = 0)
         {
-            //_userRepository.Logout();
-            //Currentuser = null;
+            HttpContext.Session.SetInt32("latest", latest);
+            //TODO PLS FIX
         }
 
         public User GetCurrentUser()
