@@ -59,7 +59,7 @@
         {
             follow = username
         }, currentUser.Username);
-        StateHasChanged();
+        NavManager.NavigateTo($"/{username}", forceLoad: true);
     }
 
     private async void UnfollowUser()
@@ -68,6 +68,6 @@
         {
             unfollow = username
         }, currentUser.Username);
-        StateHasChanged();
+        NavManager.NavigateTo($"/{username}", forceLoad: true);
     }
 }
