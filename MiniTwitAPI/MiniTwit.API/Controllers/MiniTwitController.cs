@@ -121,5 +121,10 @@ namespace MiniTwit.API.Controllers
             //return currentuser;
             return null;
         }
+
+        public async Task<bool> IsFollowing(string follower, string follows)
+        {
+            return await _userRepository.IsFollowing(follower, follows);
+        }
     }
 }

@@ -16,5 +16,6 @@ namespace MiniTwit.Models
         Task<User> Login(string username, string password);
         Task<long> RegisterUser(UserCreateDTO user);
         string GenerateHash(string password);
+        Task<bool> IsFollowing(string follower, string follows);
     }
 }

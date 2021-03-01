@@ -136,5 +136,17 @@ namespace MiniTwit.Models
             if (GenerateHash(password) != user.PwHash) return null; //wrong password
             return user;
         }
+
+        public async Task<bool> IsFollowing(string follower, string follows)
+        {
+            var followerId = await GetUserId(follower);
+            var followsId = await GetUserId(follows);
+
+            var following = await _context.Followers
+                                        .Where(f => f.WhoId == followerId)
+                                        .AnyAsync(f => f.WhomId == followsId);
+
+            return following;
+        }
     }
 }
