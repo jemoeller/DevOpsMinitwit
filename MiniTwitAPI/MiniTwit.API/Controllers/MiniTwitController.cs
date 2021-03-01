@@ -42,6 +42,12 @@ namespace MiniTwit.API.Controllers
         public async Task<IEnumerable<TimelineDTO>> GetMessages(int no = 30, int latest = 0)
         {
             HttpContext.Session.SetInt32("latest", latest);
+            return await _userRepository.PublicTimeline(no);
+        }
+
+        [HttpGet("feed/")]
+        public async Task<IEnumerable<TimelineDTO>> GetFeed(int no = 30, int latest = 0)
+        {
             return await _userRepository.Timeline(no, (int) GetCurrentUser().UserId);
         }
 

@@ -79,6 +79,7 @@ namespace MiniTwit.Models
 
         public async Task<IEnumerable<TimelineDTO>> Timeline(int per_page, int userid)
         {
+            
             var messages = await Task.Run(() => (from m in _context.Messages
                                                  join u in _context.Users on m.AuthorId equals u.UserId
                                                  where m.Flagged == 0 && (

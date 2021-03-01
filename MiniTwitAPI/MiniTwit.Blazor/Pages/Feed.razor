@@ -5,8 +5,10 @@
 @inject MiniTwitController controller
 @inject NavigationManager NavManager
 
-
-
+@if (currentUser != null)
+{
+    <Timeline messages="@messages"/>
+}
 
 @code{
 
@@ -18,7 +20,7 @@
         currentUser = controller.GetCurrentUser();
         if (currentUser == null) NavManager.NavigateTo("/public");
 
-        messages = await controller.GetMessages();
+        messages = await controller.GetFeed();
     }
 
 }
