@@ -1,0 +1,55 @@
+﻿@inherits LayoutComponentBase
+
+@using MiniTwit.API.Controllers
+@inject MiniTwitController controller
+
+<!doctype html>
+<title>{% block title %}Welcome{% endblock %} | MiniTwit</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+    <h1>MiniTwit</h1>
+    <div class=navigation>
+        @{
+            var user = controller.GetCurrentUser();
+            if (user != null)
+            {
+                <div>
+                    <a href="">my timeline</a> |
+                    <a href="public">public timeline</a> |
+                    <a href="public" @onclick="@Logout">sign out @user.Username</a>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <a href="public">public timeline</a> |
+                    <a href="register">sign up</a> |
+                    <a href="login">sign in</a>
+                </div>
+            }
+        }
+    </div>
+    @*{% with flashes = get_flashed_messages() %}
+        {% if flashes %}
+        <ul class=flashes>
+            {% for message in flashes %}
+            <li>
+                {{ message }}
+                {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}*@
+    <div class=body>
+        @Body
+    </div>
+    <div class=footer>
+        MiniTwit &mdash; A Flask Application
+    </div>
+</div>
+
+@code {
+    private void Logout()
+    {
+        controller.Logout();
+    }
+}

@@ -1,0 +1,67 @@
+﻿@page "/timelineComponent"
+@using MiniTwit.Models
+@using System.Text
+@using System.Security.Cryptography
+
+
+<ul class="messages">
+    @{
+        if (messages != null && messages.Count() != 0)
+        {
+            foreach (var m in messages)
+            {
+                <li>
+                    <img src="@Gravatar_url(m.user.Email, 48)">
+                    <!-- href to user_timeline -->
+                    <strong><a href="@m.user.Username">@m.user.Username</a></strong>
+                    @m.message.Text
+                    <small>
+                        &mdash;
+                        @ConvertLongToDateTime(m.message.PubDate)
+                    </small>
+                </li>
+            }
+        }
+        else
+        {
+            <li><em>There's no messages so far.</em></li>
+
+        }
+    }
+</ul>
+
+@code {
+
+    [Parameter] public IEnumerable<TimelineDTO> messages { get; set; }
+    private readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+
+    //Taken from https://gist.github.com/danesparza/973923
+    public string Gravatar_url(string email, int size = 80)
+    {
+        var sb = new StringBuilder();
+        MD5 md5Hasher = MD5.Create();
+        byte[] data = md5Hasher.ComputeHash(Encoding.Default.GetBytes(email.Trim().ToLower()));
+        sb.Append("http://www.gravatar.com/avatar/");
+
+        for(int i = 0; i < data.Length; i++)
+        {
+            sb.Append(data[i].ToString("x2"));
+        }
+
+        sb.Append(@"?d=identicon&s=" + size);
+
+        return sb.ToString();
+    }
+
+    public string ConvertLongToDateTime(long? pub_date)
+    {
+        if (pub_date != null)
+        {
+            DateTime dt = UnixEpoch.AddSeconds((long)pub_date);
+            String dateString = dt.ToString("dddd, dd MMMM yyyy HH:mm");
+            return Char.ToUpper(dateString[0]) + dateString.Substring(1);
+        }
+
+        return "Unknown";
+    }
+}

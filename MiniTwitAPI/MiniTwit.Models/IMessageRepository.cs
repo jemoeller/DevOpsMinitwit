@@ -12,6 +12,6 @@ namespace MiniTwit.Models
         Task<IEnumerable<Message>> GetMessagesAsync();
         Task<long> AddMessage(MessageCreateDTO message, string username);
         Task<HttpStatusCode> DeleteMessage(long id);
-        Task<IEnumerable<Message>> GetUserMessages(string username, int per_page);
+        Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int per_page);
     }
 }

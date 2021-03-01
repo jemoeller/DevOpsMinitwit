@@ -1,0 +1,42 @@
+@page "/"
+@using MiniTwit.API.Controllers
+@using MiniTwit.Entities
+@using MiniTwit.Models
+@inject MiniTwitController controller
+@inject NavigationManager NavManager
+
+@if (currentUser != null)
+{<h2>My Timeline</h2>
+    <div class=twitbox>
+        <h3>What's on your mind @currentUser.Username?</h3>
+        <p>
+            <input type=text name=text size=60 @bind-value="@message">
+            <!--
+            -->
+            <input type=submit value="Share" @onclick="@PostMessage">
+        </p>
+    </div>
+    <Timeline messages="@messages" />
+}
+
+@code{
+    public User currentUser = null;
+    private string message = "";
+    public IEnumerable<TimelineDTO> messages;
+
+    protected override async Task OnInitializedAsync()
+    {
+        currentUser = controller.GetCurrentUser();
+        if (currentUser == null) NavManager.NavigateTo("/public");
+        else messages = await controller.GetFeed();
+    }
+
+    private async void PostMessage()
+    {
+        await controller.PostUserMessages(new MessageCreateDTO
+        {
+            content = message
+        }, currentUser.Username);
+        NavManager.NavigateTo("/", forceLoad: true);
+    }
+}

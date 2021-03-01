@@ -10,13 +10,13 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
-using Microsoft.OpenApi.Models;
 using Microsoft.AspNetCore.Components;
-using MiniTwit.Entities;
+using MiniTwit.API.Controllers;
 using MiniTwit.Models;
+using MiniTwit.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace MiniTwit.API
+namespace MiniTwit.Blazor
 {
     public class Startup
     {
@@ -28,24 +28,16 @@ namespace MiniTwit.API
         public IConfiguration Configuration { get; }
 
         // This method gets called by the runtime. Use this method to add services to the container.
+        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=MiniTwit.db"));
+            services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=../MiniTwit.API/MiniTwit.db"));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
-            services.AddControllers();
-            services.AddDistributedMemoryCache();
-            services.AddMemoryCache();
-            services.AddHttpContextAccessor();
-            services.AddSession((options) =>
-            {
-                options.Cookie.IsEssential = true;
-            });
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "MiniTwit.API", Version = "v1" });
-            });
+            services.AddScoped<MiniTwitController>();
+            services.AddRazorPages();
+            services.AddServerSideBlazor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -54,23 +46,23 @@ namespace MiniTwit.API
             if (env.IsDevelopment())
             {
                 app.UseDeveloperExceptionPage();
-                app.UseSwagger();
-                app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "MiniTwit.API v1"));
+            }
+            else
+            {
+                app.UseExceptionHandler("/Error");
+                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+                app.UseHsts();
             }
 
-            //app.UseHttpsRedirection();
-
+            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
-            app.UseSession();
-
-            app.UseAuthorization();
-
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers();
+                endpoints.MapBlazorHub();
+                endpoints.MapFallbackToPage("/_Host");
             });
         }
     }
