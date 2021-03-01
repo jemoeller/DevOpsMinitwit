@@ -9,21 +9,24 @@
 <div class=page>
     <h1>MiniTwit</h1>
     <div class=navigation>
-        @if (controller.GetCurrentUser() != null)
-        {
-            <div>
-                <a href="timeline">my timeline</a> |
-                <a href="timeline">public timeline</a> |
-                <a href="logout">sign out [{{ g.user.username }}]</a>
-            </div>
-        }
-        else
-        {
-            <div>
-                <a href="timeline">public timeline</a> |
-                <a href="register">sign up</a> |
-                <a href="login">sign in</a>
-            </div>
+        @{
+            var user = controller.GetCurrentUser();
+            if (user != null)
+            {
+                <div>
+                    <a href="">my timeline</a> |
+                    <a href="public">public timeline</a> |
+                    <a href="public" @onclick="@Logout">sign out @user.Username</a>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <a href="public">public timeline</a> |
+                    <a href="register">sign up</a> |
+                    <a href="login">sign in</a>
+                </div>
+            }
         }
     </div>
     @*{% with flashes = get_flashed_messages() %}
@@ -43,3 +46,10 @@
         MiniTwit &mdash; A Flask Application
     </div>
 </div>
+
+@code {
+    private void Logout()
+    {
+        controller.Logout();
+    }
+}

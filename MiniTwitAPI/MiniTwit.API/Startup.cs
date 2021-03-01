@@ -36,6 +36,7 @@ namespace MiniTwit.API
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddControllers();
             services.AddDistributedMemoryCache();
+            services.AddMemoryCache();
             services.AddHttpContextAccessor();
             services.AddSession((options) =>
             {

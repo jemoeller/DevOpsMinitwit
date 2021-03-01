@@ -2,6 +2,7 @@
 
 @using MiniTwit.API.Controllers
 @inject MiniTwitController controller
+@inject NavigationManager NavManager
 
 <title>Sign Up</title>
 
@@ -40,11 +41,15 @@
         {
             var user = await controller.Register(new Models.RegisterDTO
             {
-                username=username,
-                email=email,
-                pwd=password
+                username = username,
+                email = email,
+                pwd = password
             });
-            Console.WriteLine(user);
+            if (user != null) NavManager.NavigateTo("/");
+            else
+            {
+                error = "Something went wrong";
+            }
         }
     }
 }

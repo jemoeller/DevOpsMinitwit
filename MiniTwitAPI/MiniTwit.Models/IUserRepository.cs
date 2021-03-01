@@ -14,7 +14,7 @@ namespace MiniTwit.Models
         Task<HttpStatusCode> FollowUser(string username, string followName);
         Task<HttpStatusCode> UnfollowUser(string username, string unfollowName);
         Task<User> Login(string username, string password);
-        Task<long> RegisterUser(UserCreateDTO user);
+        Task<User> RegisterUser(UserCreateDTO user);
         string GenerateHash(string password);
         Task<bool> IsFollowing(string follower, string follows);
     }

@@ -1,19 +1,73 @@
 @page "/{username}"
+@using MiniTwit.Entities
 @using MiniTwit.Models
 @using MiniTwit.API.Controllers
 @inject MiniTwitController controller
+@inject NavigationManager NavManager
 
-<Timeline message="@messages"/>
+<h2>@username's Timeline</h2>
+@{
+    if (currentUser != null)
+    {
+        <div class=followstatus>
+            @{
+                if (username == currentUser.Username)
+                {
+                    <div>This is you!</div>
+                }
+                else if (isFollowing)
+                {
+                    <div>
+                        You are currently following this user.
+                        <a class=unfollow href="@username" @onclick="@UnfollowUser">Unfollow user</a>.
+                    </div>
+                }
+                else
+                {
+                    <div>
+                        You are not yet following this user.
+                        <a class=follow href="@username" @onclick="@FollowUser">Follow user</a>.
+                    </div>
+                }
+            }
+        </div>
+    }
+}
+
+<Timeline messages="@messages" />
 
 @code {
 
     public IEnumerable<TimelineDTO> messages;
-    
-    [Parameter] 
+
+    [Parameter]
     public String username { get; set; }
+    private User currentUser;
+    private bool isFollowing;
 
     protected override async Task OnInitializedAsync()
     {
         messages = await controller.GetUserMessages(username);
+        currentUser = controller.GetCurrentUser();
+        if (currentUser == null) isFollowing = false;
+        else isFollowing = await controller.IsFollowing(currentUser.Username, username);
+    }
+
+    private async void FollowUser()
+    {
+        await controller.FollowUser(new FollowDTO
+        {
+            follow = username
+        }, currentUser.Username);
+        StateHasChanged();
+    }
+
+    private async void UnfollowUser()
+    {
+        await controller.FollowUser(new FollowDTO
+        {
+            unfollow = username
+        }, currentUser.Username);
+        StateHasChanged();
     }
 }
