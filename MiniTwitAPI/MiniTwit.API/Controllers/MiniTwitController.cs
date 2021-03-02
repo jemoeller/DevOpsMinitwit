@@ -23,6 +23,7 @@ namespace MiniTwit.API.Controllers
     {
         private readonly IUserRepository _userRepository;
         private readonly IMessageRepository _messageRepository;
+        private User currentUser;
         private IMemoryCache _memoryCache;
 
         public MiniTwitController(
@@ -99,7 +100,8 @@ namespace MiniTwit.API.Controllers
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var user = await _userRepository.Login(dto.username, dto.password);
-            _memoryCache.Set(CacheFields.CurrentUser, user);
+            currentUser = user;
+            //_memoryCache.Set(CacheFields.CurrentUser, user);
             if (user == null) return null;
             return user.UserId;
         }
@@ -117,7 +119,8 @@ namespace MiniTwit.API.Controllers
 
             var user = await _userRepository.RegisterUser(dto);
 
-            _memoryCache.Set(CacheFields.CurrentUser, user);
+            currentUser = user;
+            //_memoryCache.Set(CacheFields.CurrentUser, user);
 
             return user.UserId;
         }
@@ -126,12 +129,14 @@ namespace MiniTwit.API.Controllers
         public void Logout(int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            _memoryCache.Set<User>(CacheFields.CurrentUser, null);
+            currentUser = null;
+            //_memoryCache.Set<User>(CacheFields.CurrentUser, null);
         }
 
         public User GetCurrentUser()
         {
-            return _memoryCache.Get<User>(CacheFields.CurrentUser);
+            //return _memoryCache.Get<User>(CacheFields.CurrentUser);
+            return currentUser;
         }
 
         public async Task<bool> IsFollowing(string follower, string follows)
