@@ -20,8 +20,11 @@ Vagrant.configure("2") do |config|
 	  end
 
 	  #ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
-	  server.vm.provision "shell", env: {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, inline: <<-SHELL
-	  git clone https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
+	  server.vm.provision "shell", 
+	  env: 
+	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
+	  inline: <<-SHELL
+	  git clone -- single-branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
 	  ./setup.sh
 	  ./start.sh
 		SHELL
