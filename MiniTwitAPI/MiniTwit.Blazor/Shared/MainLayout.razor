@@ -1,7 +1,10 @@
 ﻿@inherits LayoutComponentBase
 
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using MiniTwit.Entities
 @using MiniTwit.API.Controllers
 @inject MiniTwitController controller
+@inject NavigationManager NavManager
 
 <!doctype html>
 <title>{% block title %}Welcome{% endblock %} | MiniTwit</title>
@@ -10,13 +13,12 @@
     <h1>MiniTwit</h1>
     <div class=navigation>
         @{
-            var user = controller.GetCurrentUser();
-            if (user != null)
+            if (currentUser != null)
             {
                 <div>
                     <a href="">my timeline</a> |
                     <a href="public">public timeline</a> |
-                    <a href="public" @onclick="@Logout">sign out @user.Username</a>
+                    <a href="public" @onclick="@Logout">sign out @currentUser.Username</a>
                 </div>
             }
             else
@@ -43,13 +45,29 @@
         @Body
     </div>
     <div class=footer>
-        MiniTwit &mdash; A Flask Application
+        MiniTwit &mdash; A Blazor Application
     </div>
 </div>
 
 @code {
-    private void Logout()
+    public User currentUser = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        controller.Logout();
+        if (firstRender)
+        {
+            currentUser = await sessionStorage.GetItemAsync<User>("user");
+            Console.WriteLine(currentUser);
+            if(currentUser != null) Console.WriteLine(currentUser.UserId);
+            currentUser = currentUser == null || currentUser.UserId == 0 ? null : currentUser;
+            Console.WriteLine(currentUser);
+            StateHasChanged();
+        }
+    }
+
+    private async void Logout()
+    {
+        await sessionStorage.SetItemAsync<User>("user", null);
+        NavManager.NavigateTo($"/public", forceLoad: true);
     }
 }
