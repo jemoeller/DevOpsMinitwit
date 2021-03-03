@@ -23,10 +23,9 @@ namespace MiniTwit.Entities
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            OnModelCreatingPartial(modelBuilder);//why do we call this method?
+            modelBuilder.Entity<Follower>()
+                .HasKey(f => new { f.WhoId, f.WhomId });
+
         }
-
-        partial void OnModelCreatingPartial(ModelBuilder modelBuilder);//do we need this?
-
     }
 }

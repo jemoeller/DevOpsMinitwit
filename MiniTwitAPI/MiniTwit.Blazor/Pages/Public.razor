@@ -3,6 +3,7 @@
 @using MiniTwit.Models
 @inject MiniTwitController controller
 
+<h2>Public Timeline</h2>
 <Timeline messages="@messages" />   
 
 @code
@@ -11,7 +12,6 @@
 
     protected override async Task OnInitializedAsync()
     {
-        messages = await controller.GetMessages(null, 1337);
-        Console.WriteLine(messages.Count());
+        messages = await controller.GetMessages();
     }
 }
