@@ -37,6 +37,21 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	iptables-save
 	mysql -u root -e "create database MiniTwit";	
 	mysql -u root MiniTwit < data.sql 
+
+	echo "Altering tables"
+	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY user_id int;"
+	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY username varchar(50);"
+	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY email varchar(50);"
+
+	mysql -u root -e "ALTER TABLE MiniTwit.follower MODIFY who_id int;"
+	mysql -u root -e "ALTER TABLE MiniTwit.follower MODIFY whom_id int;"
+
+	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY message_id int;"
+	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY author_id int;"
+	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY text TEXT;"
+	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY pub_date bigint;"
+	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY flagged int;"
+
 	mysql -u root -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
 	mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin' WITH GRANT OPTION;"
 	SHELL
