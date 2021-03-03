@@ -32,7 +32,8 @@ namespace MiniTwit.API
         public void ConfigureServices(IServiceCollection services)
         {
             //Change server-ip depending on your droplet IP
-            var _connectionString = "Server=188.166.135.109;Port=3306;Database=MiniTwit;Uid=admin;pwd=admin;";
+            //var _connectionString = Configuration["ConnectionString:Connection"];
+            var _connectionString = Configuration.GetConnectionString("Connection");
             services.AddDbContext<MiniTwitContext>(o => o.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();
