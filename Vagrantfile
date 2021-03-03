@@ -1,6 +1,6 @@
 Vagrant.configure('2') do |config|
 
-config.vm.define "ConnectionsTestDroplet" do |config|
+config.vm.define "droplet" do |config|
 	config.vm.provider :digital_ocean do |provider, override|
 override.ssh.private_key_path = '~/.ssh/id_rsa'
 
