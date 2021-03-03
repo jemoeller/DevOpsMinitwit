@@ -1,0 +1,70 @@
+﻿@inherits LayoutComponentBase
+
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using MiniTwit.Entities
+@using MiniTwit.API.Controllers
+@inject MiniTwitController controller
+@inject NavigationManager NavManager
+
+<!doctype html>
+<title>{% block title %}Welcome{% endblock %} | MiniTwit</title>
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
+<div class=page>
+    <h1>MiniTwit</h1>
+    <div class=navigation>
+        @{
+            if (currentUser != null)
+            {
+                <div>
+                    <a href="">my timeline</a> |
+                    <a href="public">public timeline</a> |
+                    <a href="public" @onclick="@Logout">sign out @currentUser.Username</a>
+                </div>
+            }
+            else
+            {
+                <div>
+                    <a href="public">public timeline</a> |
+                    <a href="register">sign up</a> |
+                    <a href="login">sign in</a>
+                </div>
+            }
+        }
+    </div>
+    @*{% with flashes = get_flashed_messages() %}
+        {% if flashes %}
+        <ul class=flashes>
+            {% for message in flashes %}
+            <li>
+                {{ message }}
+                {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}*@
+    <div class=body>
+        @Body
+    </div>
+    <div class=footer>
+        MiniTwit &mdash; A Blazor Application
+    </div>
+</div>
+
+@code {
+    public User currentUser = null;
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            currentUser = await sessionStorage.GetItemAsync<User>("user");
+            currentUser = currentUser == null || currentUser.UserId == 0 ? null : currentUser;
+            StateHasChanged();
+        }
+    }
+
+    private async void Logout()
+    {
+        await sessionStorage.SetItemAsync<User>("user", null);
+        NavManager.NavigateTo($"/public", forceLoad: true);
+    }
+}

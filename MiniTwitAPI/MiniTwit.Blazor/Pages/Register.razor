@@ -1,0 +1,60 @@
+﻿@page "/register"
+
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
+@using MiniTwit.API.Controllers
+@inject MiniTwitController controller
+@inject NavigationManager NavManager
+
+<title>Sign Up</title>
+
+<h2>Sign Up</h2>
+@if (@error != null)
+{
+    <div class=error><strong>Error:</strong>@error</div>
+}
+<dl>
+    <dt>Username:</dt>
+    <dd><input type=text name=username size=30 @bind-value="@username"></dd>
+    <dt>E-Mail:</dt>
+    <dd><input type=text name=email size=30 @bind-value="@email"></dd>
+    <dt>Password:</dt>
+    <dd><input type=password name=password size=30 @bind-value="@password"></dd>
+    <dt>Password <small>(repeat)</small>:</dt>
+    <dd><input type=password name=password2 size=30 @bind-value="@password2"></dd>
+</dl>
+<div class=actions><input type=submit value="Sign Up" @onclick="@Signup"></div>
+
+@code {
+    private string error = null;
+    private string username = "";
+    private string email = "";
+    private string password = "";
+    private string password2 = "";
+
+    private async void Signup()
+    {
+        error = null;
+        if (username == "") error = "Please enter a username";
+        if (email == "") error = "Please enter an email";
+        if (password == "") error = "Please enter a password";
+        if (password != password2) error = "The passwords don't match";
+        if (error == null)
+        {
+            var user = await controller.Register(new Models.RegisterDTO
+            {
+                username = username,
+                email = email,
+                pwd = password
+            });
+            if (user != null)
+            {
+                await sessionStorage.SetItemAsync("user", user);
+                NavManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                error = "Something went wrong";
+            }
+        }
+    }
+}
