@@ -13,7 +13,7 @@ namespace MiniTwit.Entities
     {
         [Key]
         [Column("message_id", TypeName = "integer")]
-        public long MessageId { get; set; }
+        public int MessageId { get; set; }
         [Column("author_id", TypeName = "integer")]
         public long AuthorId { get; set; }
         [Required]

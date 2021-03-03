@@ -13,8 +13,8 @@ namespace MiniTwit.Entities
     public partial class Follower
     {
         [Column("who_id", TypeName = "integer")]
-        public long? WhoId { get; set; }
+        public int WhoId { get; set; }
         [Column("whom_id", TypeName = "integer")]
-        public long? WhomId { get; set; }
+        public int WhomId { get; set; }
     }
 }

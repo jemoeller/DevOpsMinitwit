@@ -11,10 +11,9 @@ namespace MiniTwit.Entities
     [Table("user")]
     public partial class User
     {
-        [Key]
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         [Column("user_id", TypeName = "integer")]
-        public long UserId { get; set; }
+        public int UserId { get; set; }
         [Required]
         [Column("username", TypeName = "string")]
         public string Username { get; set; }
