@@ -1,6 +1,6 @@
 Vagrant.configure('2') do |config|
 
-config.vm.define "droplet" do |config|
+config.vm.define "dbserver" do |config|
 	config.vm.provider :digital_ocean do |provider, override|
 override.ssh.private_key_path = '~/.ssh/id_rsa'
         override.vm.box = 'digital_ocean'
@@ -23,19 +23,26 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
         provider.monitoring = false
 	config.vm.provision "shell", privileged: false, inline: <<-SHELL
 	echo "Installing git"
+	sudo apt-get update
 	sudo apt-get install git
 	echo "Cloning Minitwit"
 	git clone -b feature/32/setupFrontend https://github.com/SanderBuK/DevOpsMinitwit
-	echo "Installing dotnet 3.1"
-	wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-	sudo dpkg -i packages-microsoft-prod.deb
-	sudo apt-get update; \
-  	sudo apt-get install -y apt-transport-https && \
-  	sudo apt-get update && \
-  	sudo apt-get install -y dotnet-sdk-5.0
-	echo "Setting up API and Blazor"
-	nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
-	nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
+	echo "Curling sqlite to mysql conversion"
+	curl -F files[]=@DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/MiniTwit.db 'https://www.rebasedata.com/api/v1/convert?outputFormat=mysql&errorResponse=zip' -o output.zip
+	echo "Installing unzip"
+	sudo apt install unzip
+	echo "Unzipping database"
+	unzip output.zip
+	echo "Installing MySQL"
+	sudo apt install mysql-server
+	
+	SOMETHING TO REPLACE BIND ADDRESS
+	mysql -u root -e "create database MiniTwit";	
+	mysql -u root MiniTwit < data.sql 
+	../sbin/iptables -A INPUT -i eth0 -p tcp --destination-port 3306 -j ACCEPT	
+	service iptables save
+	mysql -u root -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
+	mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin' WITH GRANT OPTION;"
 	SHELL
 	end
   end

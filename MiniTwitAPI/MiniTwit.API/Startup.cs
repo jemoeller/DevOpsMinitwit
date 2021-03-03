@@ -15,6 +15,7 @@ using Microsoft.AspNetCore.Components;
 using MiniTwit.Entities;
 using MiniTwit.Models;
 using Microsoft.EntityFrameworkCore;
+using MySql.Data.EntityFramework;
 
 namespace MiniTwit.API
 {
@@ -30,7 +31,8 @@ namespace MiniTwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=MiniTwit.db"));
+            var _connectionString = "Server=188.166.20.148;Port=3306;Database=MiniTwit;Uid=admin;pwd=admin;";
+            services.AddDbContext<MiniTwitContext>(o => o.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
