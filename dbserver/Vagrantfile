@@ -8,6 +8,7 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	config.vm.network "forwarded_port", guest: 3306, host: 3306
         override.nfs.functional = false
         override.vm.allowed_synced_folder_types = :rsync
+        provider.token = '{YOUR TOKEN}'
         provider.image = 'ubuntu-18-04-x64'
         provider.region = 'AMS3'
         provider.size = 's-1vcpu-1gb'
@@ -22,13 +23,8 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	sudo apt-get update
 	sudo apt-get install git
 	echo "Cloning Minitwit"
-	git clone -b development https://github.com/SanderBuK/DevOpsMinitwit
-	echo "Curling sqlite to mysql conversion"
-	curl -F files[]=@DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/MiniTwit.db 'https://www.rebasedata.com/api/v1/convert?outputFormat=mysql&errorResponse=zip' -o output.zip
-	echo "Installing unzip"
-	sudo apt install unzip
-	echo "Unzipping database"
-	unzip output.zip
+	git clone -b feature/32/setupFrontend https://github.com/SanderBuK/DevOpsMinitwit
+
 	echo "Installing MySQL"
 	sudo apt-get install -y mysql-client-core-5.7
 	sudo apt-get install -y mysql-server
@@ -37,25 +33,19 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	sudo iptables -A INPUT -p tcp --destination-port 3306 -j ACCEPT
 	iptables-save
 	mysql -u root -e "create database MiniTwit";	
-	mysql -u root MiniTwit < data.sql 
+	
+	echo "installing pip"
+	apt-get install -y python3-pip	
+	pip3 install sqlite3-to-mysql	
+	mysql -u root -e "ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'root'"
+	sudo sqlite3mysql -f DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/MiniTwit.db -d MiniTwit -u root -p root
 
-	echo "Altering tables"
-	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY user_id int NOT NULL auto_increment PRIMARY KEY;"
-	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY username varchar(50);"
-	mysql -u root -e "ALTER TABLE MiniTwit.user MODIFY email varchar(50);"
+	mysql -u root --password=root -e "ALTER TABLE MiniTwit.user MODIFY user_id int NOT NULL auto_increment;"
+	mysql -u root --password=root -e "ALTER TABLE MiniTwit.follower ADD PRIMARY KEY(who_id, whom_id);"
+	mysql -u root --password=root -e "ALTER TABLE MiniTwit.message MODIFY message_id int NOT NULL auto_increment;"
 
-	mysql -u root -e "ALTER TABLE MiniTwit.follower MODIFY who_id int;"
-	mysql -u root -e "ALTER TABLE MiniTwit.follower MODIFY whom_id int;"
-	mysql -u root -e "ALTER TABLE MiniTwit.follower ADD PRIMARY KEY(who_id, whom_id);"
-
-	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY message_id int NOT NULL auto_increment PRIMARY KEY;"
-	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY author_id int NOT NULL;"
-	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY text TEXT;"
-	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY pub_date bigint;"
-	mysql -u root -e "ALTER TABLE MiniTwit.message MODIFY flagged int;"
-
-	mysql -u root -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
-	mysql -u root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin' WITH GRANT OPTION;"
+	mysql -u root --password=root -e "CREATE USER 'admin'@'localhost' IDENTIFIED BY 'admin';"
+	mysql -u root --password=root -e "GRANT ALL PRIVILEGES ON *.* TO 'admin'@'%' IDENTIFIED BY 'admin' WITH GRANT OPTION;"
 	SHELL
   end
 end

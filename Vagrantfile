@@ -8,6 +8,7 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
 	config.vm.network "forwarded_port", guest: 5000, host: 5000
 	config.vm.network "forwarded_port", guest: 5001, host: 5001
 	config.vm.network "forwarded_port", guest: 8000, host: 8000
+	config.vm.network "forwarded_port", guest: 8001, host: 8001
         override.nfs.functional = false
         override.vm.allowed_synced_folder_types = :rsync
         provider.token = '{YOUR TOKEN}'
@@ -18,11 +19,13 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
         provider.private_networking = false
         provider.ipv6 = false
         provider.monitoring = false
+	end
+	
 	config.vm.provision "shell", privileged: false, inline: <<-SHELL
 	echo "Installing git"
 	sudo apt-get install git
 	echo "Cloning Minitwit"
-	git clone -b feature/32/setupFrontend https://github.com/SanderBuK/DevOpsMinitwit
+	git clone https://github.com/SanderBuK/DevOpsMinitwit
 	echo "Installing dotnet 3.1"
 	wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 	sudo dpkg -i packages-microsoft-prod.deb
@@ -32,8 +35,9 @@ override.ssh.private_key_path = '~/.ssh/id_rsa'
   	sudo apt-get install -y dotnet-sdk-5.0
 	echo "Setting up API and Blazor"
 	nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
+	disown
 	nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
+	disown
 	SHELL
-	end
   end
 end
