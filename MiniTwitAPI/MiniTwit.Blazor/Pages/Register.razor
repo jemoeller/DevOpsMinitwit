@@ -1,5 +1,6 @@
 ﻿@page "/register"
 
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @using MiniTwit.API.Controllers
 @inject MiniTwitController controller
 @inject NavigationManager NavManager
@@ -45,7 +46,11 @@
                 email = email,
                 pwd = password
             });
-            if (user != null) NavManager.NavigateTo("/");
+            if (user != null)
+            {
+                await sessionStorage.SetItemAsync("user", user);
+                NavManager.NavigateTo("/", forceLoad: true);
+            }
             else
             {
                 error = "Something went wrong";

@@ -14,7 +14,7 @@ namespace MiniTwit.API.Controllers
 {
     public enum CacheFields
     {
-        Latest, CurrentUser
+        Latest
     }
 
     [ApiController]
@@ -55,10 +55,10 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("feed/")]
-        public async Task<IEnumerable<TimelineDTO>> GetFeed(int no = 30, int latest = 0)
+        public async Task<IEnumerable<TimelineDTO>> GetFeed(long userId, int no = 30, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            return await _userRepository.Timeline(no, (int) GetCurrentUser().UserId);
+            return await _userRepository.Timeline(no, (int) userId);
         }
 
         [HttpGet("msgs/{username}")]
@@ -95,17 +95,16 @@ namespace MiniTwit.API.Controllers
         [HttpPost("login/")]
         [ProducesResponseType(Status200OK)]
         [ProducesResponseType(Status404NotFound)]
-        public async Task<long?> Login([FromBody] LoginDTO dto, int latest = 0)
+        public async Task<User> Login([FromBody] LoginDTO dto, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var user = await _userRepository.Login(dto.username, dto.password);
-            _memoryCache.Set(CacheFields.CurrentUser, user);
             if (user == null) return null;
-            return user.UserId;
+            return user;
         }
 
         [HttpPost("register/")]
-        public async Task<ActionResult<long>> Register([FromBody] RegisterDTO registration, int latest = 0)
+        public async Task<User> Register([FromBody] RegisterDTO registration, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var dto = new UserCreateDTO()
@@ -117,21 +116,7 @@ namespace MiniTwit.API.Controllers
 
             var user = await _userRepository.RegisterUser(dto);
 
-            _memoryCache.Set(CacheFields.CurrentUser, user);
-
-            return user.UserId;
-        }
-
-        [HttpPost("logout/")]
-        public void Logout(int latest = 0)
-        {
-            _memoryCache.Set(CacheFields.Latest, latest);
-            _memoryCache.Set<User>(CacheFields.CurrentUser, null);
-        }
-
-        public User GetCurrentUser()
-        {
-            return _memoryCache.Get<User>(CacheFields.CurrentUser);
+            return user;
         }
 
         public async Task<bool> IsFollowing(string follower, string follows)
