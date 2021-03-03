@@ -39,8 +39,8 @@ namespace MiniTwit.Models
 
                 var follower = new Follower
                 {
-                    WhoId = WhoId,
-                    WhomId = WhomId
+                    WhoId = (int) WhoId,
+                    WhomId = (int) WhomId
                 };
 
                 _context.Followers.Add(follower);
