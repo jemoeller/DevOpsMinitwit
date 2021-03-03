@@ -15,6 +15,7 @@ using MiniTwit.API.Controllers;
 using MiniTwit.Models;
 using MiniTwit.Entities;
 using Microsoft.EntityFrameworkCore;
+using Blazored.SessionStorage;
 
 namespace MiniTwit.Blazor
 {
@@ -40,6 +41,7 @@ namespace MiniTwit.Blazor
             services.AddScoped<MiniTwitController>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddBlazoredSessionStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -1,4 +1,6 @@
 @page "/"
+
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @using MiniTwit.API.Controllers
 @using MiniTwit.Entities
 @using MiniTwit.Models
@@ -6,21 +8,42 @@
 @inject NavigationManager NavManager
 
 @if (currentUser != null)
-{
-    <Timeline messages="@messages"/>
+{<h2>My Timeline</h2>
+    <div class=twitbox>
+        <h3>What's on your mind @currentUser.Username?</h3>
+        <p>
+            <input type=text name=text size=60 @bind-value="@message">
+            <!--
+            -->
+            <input type=submit value="Share" @onclick="@PostMessage">
+        </p>
+    </div>
+    <Timeline messages="@messages" />
 }
 
 @code{
-
     public User currentUser = null;
+    private string message = "";
     public IEnumerable<TimelineDTO> messages;
-    
-    protected override async Task OnInitializedAsync()
-    {
-        currentUser = controller.GetCurrentUser();
-        if (currentUser == null) NavManager.NavigateTo("/public");
 
-        messages = await controller.GetFeed();
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+            currentUser = await sessionStorage.GetItemAsync<User>("user");
+            currentUser = currentUser == null || currentUser.UserId == 0 ? null : currentUser;
+            if (currentUser == null) NavManager.NavigateTo("/public");
+            else messages = await controller.GetFeed(currentUser.UserId);
+            StateHasChanged();
+        }
     }
 
+    private async void PostMessage()
+    {
+        await controller.PostUserMessages(new MessageCreateDTO
+        {
+            content = message
+        }, currentUser.Username);
+        NavManager.NavigateTo("/", forceLoad: true);
+    }
 }

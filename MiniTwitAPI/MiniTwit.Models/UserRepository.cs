@@ -32,34 +32,42 @@ namespace MiniTwit.Models
 
         public async Task<HttpStatusCode> FollowUser(string username, string followName)
         {
-            var WhoId = await GetUserId(username);
-            var WhomId = await GetUserId(followName);
-
-            var follower = new Follower
+            if (!await IsFollowing(username, followName))
             {
-                WhoId = WhoId,
-                WhomId = WhomId
-            };
+                var WhoId = await GetUserId(username);
+                var WhomId = await GetUserId(followName);
 
-            _context.Followers.Add(follower);
-            await _context.SaveChangesAsync();
+                var follower = new Follower
+                {
+                    WhoId = WhoId,
+                    WhomId = WhomId
+                };
 
-            return OK;
+                _context.Followers.Add(follower);
+                await _context.SaveChangesAsync();
+
+                return OK;
+            }
+            return BadRequest;
         }
 
         public async Task<HttpStatusCode> UnfollowUser(string username, string unfollowName)
         {
-            var WhoId = await GetUserId(username);
-            var WhomId = await GetUserId(unfollowName);
+            if(await IsFollowing(username, unfollowName))
+            {
+                var WhoId = await GetUserId(username);
+                var WhomId = await GetUserId(unfollowName);
 
-            var follower = (from f in _context.Followers
-                            where f.WhoId == WhoId && f.WhomId == WhomId
-                            select f).FirstOrDefault();
+                var follower = (from f in _context.Followers
+                                where f.WhoId == WhoId && f.WhomId == WhomId
+                                select f).FirstOrDefault();
 
-            _context.Followers.Remove(follower);
-            await _context.SaveChangesAsync();
+                _context.Followers.Remove(follower);
+                await _context.SaveChangesAsync();
 
-            return OK;
+                return OK;
+            }
+            return BadRequest;
         }
 
         public async Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page)
@@ -107,7 +115,7 @@ namespace MiniTwit.Models
             return Encoding.ASCII.GetString(hash, 0, hash.Length);
         }
 
-        public async Task<long> RegisterUser(UserCreateDTO user)
+        public async Task<User> RegisterUser(UserCreateDTO user)
         {
             //FIX: This creates an error everytime you try to register
             //if (await _context.Users.Select(u => u.Username == user.Username).AnyAsync()) return 0; //username taken
@@ -122,7 +130,7 @@ namespace MiniTwit.Models
 
             await _context.Users.AddAsync(entity);
             await _context.SaveChangesAsync();
-            return entity.UserId;
+            return entity;
         }
 
         public async Task<User> Login(string username, string password)

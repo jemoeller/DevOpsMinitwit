@@ -1,7 +1,9 @@
 ﻿@page "/login"
 
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @using MiniTwit.API.Controllers
 @inject MiniTwitController controller
+@inject NavigationManager NavManager
 
 <h2>Sign In</h2>
 @if (@error != null)
@@ -33,7 +35,15 @@
                 username = username,
                 password = password
             });
-            Console.WriteLine(user);
+            if (user != null)
+            {
+                await sessionStorage.SetItemAsync("user", user);
+                NavManager.NavigateTo("/", forceLoad: true);
+            }
+            else
+            {
+                error = "Wrong username or password";
+            }
         }
     }
 }
