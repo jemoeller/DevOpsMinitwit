@@ -4,7 +4,14 @@
 @inject MiniTwitController controller
 
 <h2>Public Timeline</h2>
-<Timeline messages="@messages" />   
+@if(messages == null)
+{
+    <p>Loading... (very slow (and will crash if you refresh))</p>
+}
+else
+{
+    <Timeline messages="@messages" />   
+}
 
 @code
 {
