@@ -20,17 +20,21 @@ Vagrant.configure("2") do |config|
 	  end
 
 	  #ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
-	  server.vm.provision "shell", 
+	  server.vm.provision "shell",
 	  env: 
 	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
 	  inline: <<-SHELL
 	  git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
-	  ls
-	  /root/DevOpsMiniTwit/setup.sh
-	  /root/DevOpsMiniTwit/start.sh
-		SHELL
+	  SHELL
+
+	  server.vm.provision :reload
+
+	  server.vm.provision "shell" do |s|
+		s.inline = "bash /root/DevOpsMiniTwit/start.sh"
+	  end
 	end
   end
+  	#/root/DevOpsMiniTwit/start.sh
 	#wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 	#sudo dpkg -i packages-microsoft-prod.deb
 	#sudo apt-get update; \
