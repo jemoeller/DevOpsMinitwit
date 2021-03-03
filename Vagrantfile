@@ -25,6 +25,7 @@ Vagrant.configure("2") do |config|
 	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
 	  inline: <<-SHELL
 	  git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
+	  ls
 	  /root/DevOpsMiniTwit/setup.sh
 	  /root/DevOpsMiniTwit/start.sh
 		SHELL
