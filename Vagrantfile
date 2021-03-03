@@ -11,7 +11,7 @@ Vagrant.configure("2") do |config|
 	#Create a droplet with the define name. Needs a token from digitalocean.
 	config.vm.define "NavngivDropletHer", primary: true do |server|
 	  server.vm.provider :digital_ocean do |provider|
-		provider.ssh_key_name = "jm laptop"#create or read public key on DigitalOcean
+		provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
 		provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
 		provider.image = 'docker-20-04'#Choose droplet image to create
 		provider.region = 'fra1'#select which region droplet is located in
@@ -27,10 +27,16 @@ Vagrant.configure("2") do |config|
 	  git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
 	  SHELL
 
-	  server.vm.provision :reload
+	  #server.vm.provision :reload
 
-	  server.vm.provision "shell" do |s|
-		s.inline = "bash /root/DevOpsMiniTwit/start.sh"
+	  #server.vm.provision "shell",
+	  #run : "always",
+	  #env: 
+	  #{"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
+	  #inline: <<-SHELL
+	  #bash /root/DevOpsMiniTwit/start.sh
+	  #SHELL
+
 	  end
 	end
   end
