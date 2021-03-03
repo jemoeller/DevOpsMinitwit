@@ -104,7 +104,7 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("register/")]
-        public async Task<ActionResult<User>> Register([FromBody] RegisterDTO registration, int latest = 0)
+        public async Task<User> Register([FromBody] RegisterDTO registration, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var dto = new UserCreateDTO()

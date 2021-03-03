@@ -57,10 +57,7 @@
         if (firstRender)
         {
             currentUser = await sessionStorage.GetItemAsync<User>("user");
-            Console.WriteLine(currentUser);
-            if(currentUser != null) Console.WriteLine(currentUser.UserId);
             currentUser = currentUser == null || currentUser.UserId == 0 ? null : currentUser;
-            Console.WriteLine(currentUser);
             StateHasChanged();
         }
     }
