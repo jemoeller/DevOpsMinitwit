@@ -31,7 +31,8 @@ namespace MiniTwit.API
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            var _connectionString = "Server=188.166.20.148;Port=3306;Database=MiniTwit;Uid=admin;pwd=admin;";
+            //Change server-ip depending on your droplet IP
+            var _connectionString = "Server=174.138.13.28;Port=3306;Database=MiniTwit;Uid=admin;pwd=admin;";
             services.AddDbContext<MiniTwitContext>(o => o.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();

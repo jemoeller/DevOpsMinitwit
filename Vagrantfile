@@ -5,15 +5,12 @@ config.vm.define "droplet" do |config|
 override.ssh.private_key_path = '~/.ssh/id_rsa'
         override.vm.box = 'digital_ocean'
         override.vm.box_url = "https://github.com/devopsgroup-io/vagrant-digitalocean/raw/master/box/digital_ocean.box"
-	config.vm.network :forwarded_port, guest: 5000, host: 5000
-	config.vm.network :forwarded_port, guest: 5001, host: 5001
 	config.vm.network "forwarded_port", guest: 5000, host: 5000
 	config.vm.network "forwarded_port", guest: 5001, host: 5001
-	config.vm.network :forwarded_port, guest: 8000, host: 8000
 	config.vm.network "forwarded_port", guest: 8000, host: 8000
         override.nfs.functional = false
         override.vm.allowed_synced_folder_types = :rsync
-        provider.token = 'e77dddd1ee9a37efc3f1d699f87530cda5c8658cf9785f43427aa6c31fd893b0'
+        provider.token = '{YOUR TOKEN}'
         provider.image = 'ubuntu-18-04-x64'
         provider.region = 'AMS3'
         provider.size = 's-1vcpu-1gb'
