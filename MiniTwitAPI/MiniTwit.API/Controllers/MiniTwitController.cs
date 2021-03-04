@@ -57,7 +57,7 @@ namespace MiniTwit.API.Controllers
         */
 
         [HttpGet("msgs/")]
-        public async IActionResult<Task<IEnumerable<TimelineDTO>>> GetMessages(int no = 30, int latest = 0)
+        public async Task<IActionResult<IEnumerable<TimelineDTO>>> GetMessages(int no = 30, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var result = await _userRepository.PublicTimeline(no);
@@ -72,7 +72,7 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("msgs/{username}")]
-        public async IActionResult<Task<IEnumerable<TimelineDTO>>> GetUserMessages(string username, int no = 30, int latest = 0)
+        public async Task<IActionResult<IEnumerable<TimelineDTO>>> GetUserMessages(string username, int no = 30, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var result = await _messageRepository.GetUserMessages(username, no);
@@ -82,7 +82,7 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("msgs/{username}")]
-        public async IActionResult<Task<ActionResult<long>>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
+        public async Task<IActionResult<ActionResult<long>>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
             var result = await _messageRepository.AddMessage(request, username);
