@@ -3,8 +3,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.InMemory;
 using System.Threading.Tasks;
-using Entities;
-using Shared;
+using MiniTwit.Entities;
 using Xunit;
 
 namespace Models.Test
