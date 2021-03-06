@@ -15,6 +15,7 @@ using MiniTwit.API.Controllers;
 using MiniTwit.Models;
 using MiniTwit.Entities;
 using Microsoft.EntityFrameworkCore;
+using Blazored.SessionStorage;
 
 namespace MiniTwit.Blazor
 {
@@ -31,13 +32,16 @@ namespace MiniTwit.Blazor
         // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<MiniTwitContext>(o => o.UseSqlite("Filename=../MiniTwit.API/MiniTwit.db"));
+            //Change server-ip depending on your droplet IP
+            var _connectionString = Configuration.GetConnectionString("Connection");
+            services.AddDbContext<MiniTwitContext>(o => o.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();
             services.AddScoped<IUserRepository, UserRepository>();
             services.AddScoped<MiniTwitController>();
             services.AddRazorPages();
             services.AddServerSideBlazor();
+            services.AddBlazoredSessionStorage();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -25,7 +25,6 @@ namespace MiniTwit.Entities
         {
             modelBuilder.Entity<Follower>()
                 .HasKey(f => new { f.WhoId, f.WhomId });
-
         }
     }
 }

@@ -13,18 +13,37 @@ Vagrant.configure("2") do |config|
 	  server.vm.provider :digital_ocean do |provider|
 		provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
 		provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
-		provider.image = 'docker-20-04'#Choose droplet image to create
+		provider.image = 'docker-18-04'#Choose droplet image to create
 		provider.region = 'fra1'#select which region droplet is located in
-		provider.size = 's-1vcpu-2gb'#select cpu and so on for droplet
+		provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
 		provider.privatenetworking = true
 	  end
 
 	  #ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
 	  server.vm.provision "shell",
 	  env: 
-	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
+	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN'],
+	   "CONNECTION_STRING"=> ENV['CONNECTION_STRING']}, 
 	  inline: <<-SHELL
+	  echo "Cloning Minitwit"
 	  git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
+	  echo "Installing dotnet 3.1"
+	  wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+	  sudo dpkg -i packages-microsoft-prod.deb
+	  sudo apt-get update; \
+	  sudo apt-get install -y apt-transport-https && \
+	  sudo apt-get update && \
+	  sudo apt-get install -y dotnet-sdk-5.0
+	  echo "managing enviroment variables & secrets shhhhhhhhh"
+	  dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
+	  dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
+	  dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
+	  dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
+	  echo "Setting up API and Blazor"
+	  nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
+	  disown &&
+	  nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
+	  disown
 	  SHELL
 
 	  #server.vm.provision :reload

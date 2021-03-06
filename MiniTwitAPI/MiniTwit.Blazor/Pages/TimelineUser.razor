@@ -1,4 +1,6 @@
 @page "/{username}"
+
+@inject Blazored.SessionStorage.ISessionStorageService sessionStorage
 @using MiniTwit.Entities
 @using MiniTwit.Models
 @using MiniTwit.API.Controllers
@@ -45,12 +47,17 @@
     private User currentUser;
     private bool isFollowing;
 
-    protected override async Task OnInitializedAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        messages = await controller.GetUserMessages(username);
-        currentUser = controller.GetCurrentUser();
-        if (currentUser == null) isFollowing = false;
-        else isFollowing = await controller.IsFollowing(currentUser.Username, username);
+        if (firstRender)
+        {
+            currentUser = await sessionStorage.GetItemAsync<User>("user");
+            currentUser = currentUser == null || currentUser.UserId == 0 ? null : currentUser;
+            messages = await controller.GetUserMessages(username);
+            if (currentUser == null) isFollowing = false;
+            else isFollowing = await controller.IsFollowing(currentUser.Username, username);
+            StateHasChanged();
+        }
     }
 
     private async void FollowUser()
