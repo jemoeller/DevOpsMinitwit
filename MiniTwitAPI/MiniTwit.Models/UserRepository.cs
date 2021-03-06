@@ -46,7 +46,7 @@ namespace MiniTwit.Models
                 _context.Followers.Add(follower);
                 await _context.SaveChangesAsync();
 
-                return OK;
+                return NoContent;
             }
             return BadRequest;
         }
