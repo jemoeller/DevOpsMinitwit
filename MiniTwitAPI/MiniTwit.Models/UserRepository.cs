@@ -65,7 +65,7 @@ namespace MiniTwit.Models
                 _context.Followers.Remove(follower);
                 await _context.SaveChangesAsync();
 
-                return OK;
+                return NoContent;
             }
             return BadRequest;
         }

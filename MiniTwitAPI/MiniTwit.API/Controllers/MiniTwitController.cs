@@ -48,11 +48,10 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("msgs/")]
-        public async Task<IActionResult<IEnumerable<TimelineDTO>>> GetMessages(int no = 30, int latest = 0)
+        public async Task<IEnumerable<TimelineDTO>> GetMessages(int no = 30, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            var result = await _userRepository.PublicTimeline(no);
-            return this.Ok(result);
+            return await _userRepository.PublicTimeline(no);
         }
 
         [HttpGet("feed/")]
@@ -63,28 +62,26 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpGet("msgs/{username}")]
-        public async Task<IActionResult<IEnumerable<TimelineDTO>>> GetUserMessages(string username, int no = 30, int latest = 0)
+        public async Task<IEnumerable<TimelineDTO>> GetUserMessages(string username, int no = 30, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            var result = await _messageRepository.GetUserMessages(username, no);
-            
-            if (result == null) return this.BadRequest();
-            else return this.NoContent();
+            return await _messageRepository.GetUserMessages(username, no);
         }
 
         [HttpPost("msgs/{username}")]
-        public async Task<IActionResult<ActionResult<long>>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
+        public async Task<IActionResult> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            var result = await _messageRepository.AddMessage(request, username);
-            return this.NoContent();
+            await _messageRepository.AddMessage(request, username);
+            return NoContent();
         }
 
         [HttpPost("fllws/{username}")]
+        [ProducesResponseType(Status204NoContent)]
         public async Task<ActionResult> FollowUser([FromBody] FollowDTO request, string username, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            var response = HttpStatusCode.BadRequest;
+            var response = HttpStatusCode.InternalServerError;
             if (request.follow != null)
             {
                 response = await _userRepository.FollowUser(username, request.follow);
@@ -109,9 +106,17 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("register/")]
-        public async Task<IActionResult<User>> Register([FromBody] RegisterDTO registration, int latest = 0)
+        public async Task<IActionResult> RegisterEndpoint([FromBody] RegisterDTO registration, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
+
+            var user = await Register(registration);
+
+            if (user == null) return BadRequest();
+            else return NoContent();
+        }
+        public async Task<User> Register(RegisterDTO registration)
+        {
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
@@ -121,10 +126,8 @@ namespace MiniTwit.API.Controllers
 
             var user = await _userRepository.RegisterUser(dto);
 
-            if (user == null) return this.BadRequest()
-            else return this.NoContent();
+            return user;
         }
-
 
         public async Task<bool> IsFollowing(string follower, string follows)
         {
