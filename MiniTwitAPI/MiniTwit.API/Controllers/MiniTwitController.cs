@@ -69,17 +69,19 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("msgs/{username}")]
-        public async Task<ActionResult<long>> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
+        public async Task<IActionResult> PostUserMessages([FromBody] MessageCreateDTO request, string username, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            return await _messageRepository.AddMessage(request, username);
+            await _messageRepository.AddMessage(request, username);
+            return NoContent();
         }
 
         [HttpPost("fllws/{username}")]
+        [ProducesResponseType(Status204NoContent)]
         public async Task<ActionResult> FollowUser([FromBody] FollowDTO request, string username, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
-            var response = HttpStatusCode.BadRequest;
+            var response = HttpStatusCode.InternalServerError;
             if (request.follow != null)
             {
                 response = await _userRepository.FollowUser(username, request.follow);
@@ -104,9 +106,17 @@ namespace MiniTwit.API.Controllers
         }
 
         [HttpPost("register/")]
-        public async Task<User> Register([FromBody] RegisterDTO registration, int latest = 0)
+        public async Task<IActionResult> RegisterEndpoint([FromBody] RegisterDTO registration, int latest = 0)
         {
             _memoryCache.Set(CacheFields.Latest, latest);
+
+            var user = await Register(registration);
+
+            if (user == null) return BadRequest();
+            else return NoContent();
+        }
+        public async Task<User> Register(RegisterDTO registration)
+        {
             var dto = new UserCreateDTO()
             {
                 Username = registration.username,
