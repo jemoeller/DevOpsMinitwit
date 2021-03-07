@@ -72,15 +72,19 @@ namespace MiniTwit.Models
 
         public async Task<IEnumerable<TimelineDTO>> PublicTimeline(int per_page)
         {
-            var messages = await Task.Run(() => (from m in _context.Messages
-                                                 join u in _context.Users on m.AuthorId equals u.UserId
-                                                 where m.Flagged == 0
-                                                 orderby m.PubDate descending
-                                                 select new TimelineDTO
-                                                 {
-                                                     message = m,
-                                                     user = u
-                                                 }).Take(per_page).ToList());
+            var messages = await _context.Messages.Skip(_context.Messages.Count() - per_page)
+                                .Where(m => m.Flagged == 0)
+                                .Join(_context.Users,
+                                    m => m.AuthorId,
+                                    u => u.UserId, (m, u) =>
+                                    new TimelineDTO
+                                    {
+                                        message = m,
+                                        user = u
+                                    })
+                                .OrderByDescending(tl => tl.message.PubDate)
+                                .Select(tl => tl)
+                                .ToListAsync();
 
             return messages;
         }
