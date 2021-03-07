@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
@@ -17,7 +17,7 @@ namespace Models.Test
         public UserRepositoryTests()
         {
             var builder = new DbContextOptionsBuilder<MiniTwitContext>().UseSqlite("DataSource=:memory:");
-            context = new MinitwitTestContext(builder.Options);
+            context = new ContextTest(builder.Options);
             context.Database.EnsureCreated();
             repo = new UserRepository(context);
         }
@@ -26,10 +26,12 @@ namespace Models.Test
         public async Task create_user_succesfully()
         {
             var result = await repo.RegisterUser(
-                new UserCreateDTO { 
-                    Username = "userTest", 
-                    Email = "userTest@mail.io", 
-                    Password = "123"}
+                new UserCreateDTO
+                {
+                    Username = "userTest",
+                    Email = "userTest@mail.io",
+                    Password = "123"
+                }
                 );
             var userQuery = from u in context.Users where u.Username == "userTest" select u;
             var user = await userQuery.FirstOrDefaultAsync();

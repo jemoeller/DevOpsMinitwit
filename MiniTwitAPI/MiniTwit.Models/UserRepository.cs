@@ -106,6 +106,7 @@ namespace MiniTwit.Models
             return messages;
         }
 
+
         public string GenerateHash(string password)
         {
             using var sha256 = SHA256.Create();
