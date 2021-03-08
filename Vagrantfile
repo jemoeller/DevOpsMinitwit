@@ -10,55 +10,34 @@ Vagrant.configure("2") do |config|
 
 	#Create a droplet with the define name. Needs a token from digitalocean.
 	config.vm.define "NavngivDropletHer", primary: true do |server|
-	  server.vm.provider :digital_ocean do |provider|
-		provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
-		provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
-		provider.image = 'docker-18-04'#Choose droplet image to create
-		provider.region = 'fra1'#select which region droplet is located in
-		provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
-		provider.privatenetworking = true
-	  end
+		server.vm.provider :digital_ocean do |provider|
+			provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
+			provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
+			provider.image = 'docker-18-04'#Choose droplet image to create
+			provider.region = 'fra1'#select which region droplet is located in
+			provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
+			provider.privatenetworking = true
+		end
 
-	  #ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
-	  server.vm.provision "shell",
-	  env: 
-	  {"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN'],
-	   "CONNECTION_STRING"=> ENV['CONNECTION_STRING']}, 
-	  inline: <<-SHELL
-	  echo "Cloning Minitwit"
-	  git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
-	  echo "Installing dotnet 3.1"
-	  wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-	  sudo dpkg -i packages-microsoft-prod.deb
-	  sudo apt-get update; \
-	  sudo apt-get install -y apt-transport-https && \
-	  sudo apt-get update && \
-	  sudo apt-get install -y dotnet-sdk-5.0
-	  echo "managing enviroment variables & secrets shhhhhhhhh"
-	  dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
-	  dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
-	  dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
-	  dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
-	  echo "Setting up API and Blazor"
-	  nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
-	  disown &&
-	  nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
-	  disown
-	  SHELL
-
-	  #server.vm.provision :reload
-
-	  #server.vm.provision "shell",
-	  #run : "always",
-	  #env: 
-	  #{"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN']}, 
-	  #inline: <<-SHELL
-	  #bash /root/DevOpsMiniTwit/start.sh
-	  #SHELL
-
-	  end
+		#ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
+		server.vm.provision "shell",
+		env: 
+		{"DOCKER_PW"=>ENV['DOCKER_PW'],
+		"DOCKER_ID"=> ENV['DOCKER_ID']}, 
+		inline: <<-SHELL
+		echo login docker
+		echo "$DOCKER_PW" > ~/my_password.txt
+		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
+		rm ~/my_password.txt
+		docker pull jemol/minitwit_blazor:latest
+		docker pull jemol/minitwit_api:latest
+		docker run -d -p 5001:80 jemol/minitwit_api:latest
+		docker run -d -p 8001:80 jemol/minitwit_blazor:latest
+		docker logout
+		SHELL
+		end
 	end
-  end
+#end
   	#/root/DevOpsMiniTwit/start.sh
 	#wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
 	#sudo dpkg -i packages-microsoft-prod.deb
@@ -68,4 +47,23 @@ Vagrant.configure("2") do |config|
   	#sudo apt-get install -y dotnet-sdk-5.0	
 	#echo "Setting up API"
 	#dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001
-
+	#echo "Cloning Minitwit"
+	#git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
+	#echo "Installing dotnet 3.1"
+	#wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
+	#sudo dpkg -i packages-microsoft-prod.deb
+	#sudo apt-get update; \
+	#sudo apt-get install -y apt-transport-https && \
+	#sudo apt-get update && \
+	#sudo apt-get install -y dotnet-sdk-5.0
+	#echo "managing enviroment variables & secrets shhhhhhhhh"
+	#dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
+	#dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
+	#dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
+	#dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
+	#echo "Setting up API and Blazor"
+	#nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
+	#disown &&
+	#nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
+	#disown*/
+#
