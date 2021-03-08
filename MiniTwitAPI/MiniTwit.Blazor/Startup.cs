@@ -33,7 +33,8 @@ namespace MiniTwit.Blazor
         public void ConfigureServices(IServiceCollection services)
         {
             //Change server-ip depending on your droplet IP
-            var _connectionString = Configuration.GetConnectionString("Connection");
+            var _connectionString = Configuration["ConnectionString:Connection"]; //For ubuntu server
+            //var _connectionString = Configuration.GetConnectionString("Connection"); //For My computer :D
             services.AddDbContext<MiniTwitContext>(o => o.UseMySql(_connectionString, ServerVersion.AutoDetect(_connectionString)));
             services.AddScoped<IMiniTwitContext, MiniTwitContext>();
             services.AddScoped<IMessageRepository, MessageRepository>();
