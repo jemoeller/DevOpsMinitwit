@@ -1,0 +1,12 @@
+version: "3"
+services:
+    webapi:
+        image: jemol/minitwit_api:latest
+        ports: 
+        - "5001:80"
+
+    blazor_web_app:
+        image: jemol/minitwit_blazor:latest
+        ports: 
+        - "8001:80"
+
