@@ -39,35 +39,5 @@ Vagrant.configure("2") do |config|
 		docker run -d -p 8001:80 jemol/minitwit_blazor:latest
 		docker logout
 		SHELL
-		end
 	end
-#end
-  	#/root/DevOpsMiniTwit/start.sh
-	#wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-	#sudo dpkg -i packages-microsoft-prod.deb
-	#sudo apt-get update; \
-  	#sudo apt-get install -y apt-transport-https && \
-  	#sudo apt-get update && \
-  	#sudo apt-get install -y dotnet-sdk-5.0	
-	#echo "Setting up API"
-	#dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001
-	#echo "Cloning Minitwit"
-	#git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
-	#echo "Installing dotnet 3.1"
-	#wget https://packages.microsoft.com/config/ubuntu/18.04/packages-microsoft-prod.deb -O packages-microsoft-prod.deb
-	#sudo dpkg -i packages-microsoft-prod.deb
-	#sudo apt-get update; \
-	#sudo apt-get install -y apt-transport-https && \
-	#sudo apt-get update && \
-	#sudo apt-get install -y dotnet-sdk-5.0
-	#echo "managing enviroment variables & secrets shhhhhhhhh"
-	#dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
-	#dotnet user-secrets init --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
-	#dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/
-	#dotnet user-secrets set "ConnectionString:Connection" $CONNECTION_STRING --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/
-	#echo "Setting up API and Blazor"
-	#nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.API/ --urls=http://0.0.0.0:5001 &
-	#disown &&
-	#nohup dotnet run --project DevOpsMinitwit/MiniTwitAPI/MiniTwit.Blazor/ --urls=http://0.0.0.0:8001 &	
-	#disown*/
-#
+end
