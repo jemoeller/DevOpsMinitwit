@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 			provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
 			provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
 			provider.image = 'docker-18-04'#Choose droplet image to create
-			provider.region = 'AMS1'#select which region droplet is located in
+			provider.region = 'AMS3'#select which region droplet is located in
 			provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
 			provider.privatenetworking = false
 		end
@@ -26,7 +26,7 @@ Vagrant.configure("2") do |config|
 			"DOCKER_ID"=>ENV['DOCKER_ID']}, 
 		inline: <<-SHELL
 		echo pulling git repository
-		git clone --single-branch --branch feature/36/setupScript https://github.com/SanderBuK/DevOpsMinitwit.git
+		git clone --single-branch --branch development https://github.com/SanderBuK/DevOpsMinitwit.git
 		echo login docker
 		echo "$DOCKER_TOKEN" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
