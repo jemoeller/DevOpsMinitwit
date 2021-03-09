@@ -34,7 +34,7 @@ Vagrant.configure("2") do |config|
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
 		rm ~/my_password.txt
 		docker-compose pull
-		docker-compose up
+		docker-compose up -d
 		docker logout
 		SHELL
 	end
