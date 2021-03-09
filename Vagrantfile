@@ -19,12 +19,16 @@ Vagrant.configure("2") do |config|
 			provider.privatenetworking = true
 		end
 
-		#ENV allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
+		#'env:' allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
 		server.vm.provision "shell",
-		env: 
-		{"DOCKER_PW"=>ENV['DOCKER_PW'],
-		"DOCKER_ID"=> ENV['DOCKER_ID']}, 
+		env: {
+			"DOCKER_PW"=>ENV['DOCKER_PW'],
+			"DOCKER_ID"=>ENV['DOCKER_ID'],
+			"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN'],
+			"CONNECTION_STRING"=>ENV['CONNECTION_STRING']}, 
 		inline: <<-SHELL
+		echo pulling git repository
+		git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
 		echo login docker
 		echo "$DOCKER_PW" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
