@@ -16,13 +16,13 @@ Vagrant.configure("2") do |config|
 			provider.image = 'docker-18-04'#Choose droplet image to create
 			provider.region = 'fra1'#select which region droplet is located in
 			provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
-			provider.privatenetworking = true
+			provider.privatenetworking = false
 		end
 
 		#'env:' allows us to use local environment variables in the server provision. They will NOT be accessible outside of the provision.
 		server.vm.provision "shell",
 		env: {
-			"DOCKER_PW"=>ENV['DOCKER_PW'],
+			"DOCKER_TOKEN"=>ENV['DOCKER_TOKEN'],
 			"DOCKER_ID"=>ENV['DOCKER_ID'],
 			"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN'],
 			"CONNECTION_STRING"=>ENV['CONNECTION_STRING']}, 
@@ -30,13 +30,11 @@ Vagrant.configure("2") do |config|
 		echo pulling git repository
 		git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
 		echo login docker
-		echo "$DOCKER_PW" > ~/my_password.txt
+		echo "$DOCKER_TOKEN" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
 		rm ~/my_password.txt
-		docker pull jemol/minitwit_blazor:latest
-		docker pull jemol/minitwit_api:latest
-		docker run -d -p 5001:80 jemol/minitwit_api:latest
-		docker run -d -p 8001:80 jemol/minitwit_blazor:latest
+		docker-compose pull
+		docker-compose up
 		docker logout
 		SHELL
 	end
