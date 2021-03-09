@@ -33,8 +33,8 @@ Vagrant.configure("2") do |config|
 		echo "$DOCKER_TOKEN" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
 		rm ~/my_password.txt
-		docker-compose pull
-		docker-compose up -d
+		docker-compose pull -f DevOpsMinitwit/docker-compose.yml
+		docker-compose up -d -f DevOpsMinitwit/docker-compose.yml
 		docker logout
 		SHELL
 	end
