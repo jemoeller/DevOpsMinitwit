@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
 			provider.ssh_key_name = ENV["DIGITAL_OCEAN_KEYNAME"]#create or read public key on DigitalOcean
 			provider.token = ENV["DIGITAL_OCEAN_TOKEN"]#Use token to create droplet on DigitalOcean
 			provider.image = 'docker-18-04'#Choose droplet image to create
-			provider.region = 'fra1'#select which region droplet is located in
+			provider.region = 'AMS1'#select which region droplet is located in
 			provider.size = 's-1vcpu-1gb'#select cpu and so on for droplet
 			provider.privatenetworking = false
 		end
@@ -33,8 +33,8 @@ Vagrant.configure("2") do |config|
 		echo "$DOCKER_TOKEN" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
 		rm ~/my_password.txt
-		docker-compose pull -f DevOpsMinitwit/docker-compose.yml
-		docker-compose up -d -f DevOpsMinitwit/docker-compose.yml
+		docker-compose -f DevOpsMinitwit/docker-compose.yml pull
+		docker-compose -f DevOpsMinitwit/docker-compose.yml up -d
 		docker logout
 		SHELL
 	end
