@@ -23,12 +23,10 @@ Vagrant.configure("2") do |config|
 		server.vm.provision "shell",
 		env: {
 			"DOCKER_TOKEN"=>ENV['DOCKER_TOKEN'],
-			"DOCKER_ID"=>ENV['DOCKER_ID'],
-			"GITHUB_TOKEN"=>ENV['GITHUB_TOKEN'],
-			"CONNECTION_STRING"=>ENV['CONNECTION_STRING']}, 
+			"DOCKER_ID"=>ENV['DOCKER_ID']}, 
 		inline: <<-SHELL
 		echo pulling git repository
-		git clone --single-branch --branch feature/36/setupScript https://$GITHUB_TOKEN:x-oauth-basic@github.com/SanderBuK/DevOpsMinitwit.git
+		git clone --single-branch --branch feature/36/setupScript https://github.com/SanderBuK/DevOpsMinitwit.git
 		echo login docker
 		echo "$DOCKER_TOKEN" > ~/my_password.txt
 		cat ~/my_password.txt |docker login -u "${DOCKER_ID}" --password-stdin
