@@ -1,3 +1,6 @@
+os: linux
+dist: bionic
+
 language: csharp
 
 services:
@@ -16,4 +19,4 @@ jobs:
       script: |
         - ssh root@188.166.123.44
         - docker-compose -f DevOpsMinitwit/docker-compose.yml pull
-		    - docker-compose -f DevOpsMinitwit/docker-compose.yml up -d
+        - docker-compose -f DevOpsMinitwit/docker-compose.yml up -d
