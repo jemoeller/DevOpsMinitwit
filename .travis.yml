@@ -1,0 +1,19 @@
+language: csharp
+
+services:
+  - docker
+
+jobs:
+  include:
+    - stage: docker_build
+      name: "Build and push docker"
+      script:
+        - docker-compose build
+        - docker-compose push
+    
+    - stage: deploy
+      name: "Deploy to server"
+      script: |
+        - ssh root@188.166.123.44
+        - docker-compose -f DevOpsMinitwit/docker-compose.yml pull
+		    - docker-compose -f DevOpsMinitwit/docker-compose.yml up -d
