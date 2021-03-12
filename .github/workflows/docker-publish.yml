@@ -32,4 +32,4 @@ jobs:
       - run:
           | 
           doctl compute droplet list
-          doctl compute ssh ${{ secrets.DROPLET_ID }}--ssh-key-path ~/.ssh
+          doctl compute ssh ${{ secrets.DROPLET_ID }} --ssh-key-path ~/.ssh
