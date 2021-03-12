@@ -36,4 +36,4 @@ jobs:
           SSH_KEY_PATH: $GITHUB_WORKSPACE/../private.key
       - name: deploy images
         run: |
-          ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
+          ssh -o "StrictHostKeyChecking no" -i ~/.ssh/id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
