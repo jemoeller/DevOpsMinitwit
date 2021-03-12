@@ -24,9 +24,9 @@ jobs:
       - name: Create SSH key
         run: |
           mkdir -p ~/.ssh/
-          echo "$SSH_KEY_P" > ../private.key
+          echo "${{secrets.SSH_KEY_P}}" > ../private.key
           sudo chmod 600 ../private.key
-          echo "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          echo "${{secrets.SSH_KNOWN_HOSTS}}" > ~/.ssh/known_hosts
         shell: bash
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_KEY_P}}
