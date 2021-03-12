@@ -27,7 +27,6 @@ jobs:
           echo "${{secrets.SSH_KEY_P}}" > ../private.key
           sudo chmod 600 ../private.key
           echo "${{secrets.SSH_KNOWN_HOSTS}}" > ~/.ssh/known_hosts
-          ssh-add ~/.ssh/private.key
         shell: bash
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_KEY_P}}
