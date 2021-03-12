@@ -37,3 +37,4 @@ jobs:
       - name: deploy images
         run: |
           ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
+          ls
