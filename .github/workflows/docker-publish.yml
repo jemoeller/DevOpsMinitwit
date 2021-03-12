@@ -13,30 +13,9 @@ env:
 jobs:
   # Run tests.
   # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-      - run: echo "test test"
-
-  # Push image to GitHub Packages.
-  # See also https://docs.docker.com/docker-hub/builds/
-  push:
-    # Ensure test job passes before pushing image.
-    needs: test
-
-    runs-on: ubuntu-latest
-    if: github.event_name == 'push'
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - run: docker-compose -v
       
   deploy:
     #deploy after pushing the images to docker hub
-    needs: push
     runs-on: ubuntu-latest
 
     steps:
@@ -45,6 +24,7 @@ jobs:
       - uses: shimataro/ssh-key-action@v2.2.0
         with:
           key: ${{ secrets.SSH_KEY_P }}
+          known_hosts: ""
         
       - uses: digitalocean/action-doctl@v2
         with:
