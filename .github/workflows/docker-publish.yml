@@ -32,11 +32,10 @@ jobs:
         env:
           SSH_PRIVATE_KEY: ${{secrets.SSH_KEY_P}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
-          SSH_KEY_PATH: ${{ GITHUB_WORKSPACE }}/../private.key
+          SSH_KEY_PATH: $GITHUB_WORKSPACE/../private.key
       - name: deploy images
         run: |
           ls
-          cd ${{ GITHUB_WORKSPACE }}
+          cd $GITHUB_WORKSPACE
           ls
-          
-          ssh -i $SSH_KEY_PATH ${{secrets.SERVER_USERNAME}}@${{secrets.SERVER_IP}}
+          ssh -i $SSH_KEY_PATH ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
