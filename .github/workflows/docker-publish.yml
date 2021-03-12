@@ -39,4 +39,4 @@ jobs:
           ls
           cd $GITHUB_WORKSPACE
           ls
-          ssh -i ~/.ssh/id_rsa -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
+          ssh -i ${{secrets.SSH_KEY_P}} -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
