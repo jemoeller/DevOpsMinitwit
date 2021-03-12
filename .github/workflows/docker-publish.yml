@@ -18,6 +18,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
+      - run: echo "test test"
 
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
@@ -31,10 +32,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - step:
-        name: docker compose push
-        run: |
-          docker-compose -f $COMPOSE_FILE push
+      - run: docker-compose -v
       
   deploy:
     #deploy after pushing the images to docker hub
@@ -42,14 +40,11 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    
-      - step:
-        name: checkout
-        uses: actions/checkout@v2
-
-      - step:
-        name: executing remote ssh commands using ssh key
-        uses: appleboy/ssh-action@master
+      - uses: actions/checkout@v2
+        
+        
+      - uses: appleboy/ssh-action@master
+        name : executing remote ssh commands using ssh key
         with:
           host: ${{ secrets.SERVER_IP }}
           username: root
