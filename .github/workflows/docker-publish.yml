@@ -32,3 +32,6 @@ jobs:
           SSH_PRIVATE_KEY: ${{secrets.SSH_KEY_P}}
           SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
           SSH_KEY_PATH: ${{ github.workspace }}/../private.key
+      - name: deploy images
+        run: |
+          ssh -i $SSH_KEY_PATH ${secrets.SERVER_USERNAME}@${secrets.SERVER_IP}
