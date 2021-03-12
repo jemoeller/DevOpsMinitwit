@@ -39,4 +39,4 @@ jobs:
           ls
           cd $GITHUB_WORKSPACE
           ls
-          ssh -i $SSH_KEY_PATH ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
+          ssh -i ~/.ssh/id_rsa ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
