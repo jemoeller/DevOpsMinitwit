@@ -8,5 +8,7 @@ RUN dotnet publish MiniTwit.Blazor -o ./out
 
 FROM mcr.microsoft.com/dotnet/aspnet:5.0
 
+EXPOSE 80
+
 COPY --from=build-env /out .
 ENTRYPOINT ["dotnet", "MiniTwit.Blazor.dll"]
