@@ -43,15 +43,11 @@ jobs:
       - name: Create SSH key
         run: |
           mkdir ~/.ssh/
-          echo "${{secrets.SSH_KEY_p}}" > ~/.ssh/id_rsa
+          echo "${{secrets.SSH_KEY_P}}" > ~/.ssh/id_rsa
           sudo chmod 600 ~/.ssh/id_rsa
           eval `ssh-agent`
           ssh-add ~/.ssh/id_rsa
         shell: bash
-        env:
-          SSH_PRIVATE_KEY: ${{secrets.SSH_KEY_P}}
-          SSH_KNOWN_HOSTS: ${{secrets.SSH_KNOWN_HOSTS}}
-          SSH_KEY_PATH: $GITHUB_WORKSPACE/../private.key
       - name: deploy images
         run: |
           ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
