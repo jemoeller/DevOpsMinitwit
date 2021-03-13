@@ -56,4 +56,4 @@ jobs:
         run: |
           ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
           ls
-          docker-compose -f DevOpsMinitwit/docker-compose.yml pull
+          docker-compose -f docker-compose.yml pull
