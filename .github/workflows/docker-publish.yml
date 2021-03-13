@@ -8,7 +8,7 @@ on:
 
 env:
   # TODO: Change variable to your image's name.
-  COMPOSE_FILE: Docker-compose.yml
+  COMPOSE_FILE: docker-compose.yml
 
 jobs:
   # Run tests.
@@ -29,7 +29,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          docker-compose -f docker-compose.yml push
+          docker-compose -f $COMPOSE_FILE push
       
   deploy:
     #deploy after pushing the images to docker hub
