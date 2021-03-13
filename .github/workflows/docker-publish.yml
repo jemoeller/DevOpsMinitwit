@@ -11,31 +11,29 @@ env:
   COMPOSE_FILE: docker-compose.yml
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-  test:
+
+  Test:
     runs-on: ubuntu-latest
     
     steps:
+      - name: test step 1
       - uses: actions/checkout@v2
       - run: |
           echo jeg tester ting
           
-  push:
+  Push:
     runs-on: ubuntu-latest
-    
-    needs: test
+    needs: Test
     
     steps:
       - uses: actions/checkout@v2
+      - name: docker-compose push
       - run: |
           docker-compose -f $COMPOSE_FILE push
       
-  deploy:
-    #deploy after pushing the images to docker hub
+Deploy:
     runs-on: ubuntu-latest
-    
-    needs: push
+    needs: Push
 
     steps:
       - uses: actions/checkout@v2
@@ -48,11 +46,6 @@ jobs:
           eval `ssh-agent`
           ssh-add ~/.ssh/id_rsa
         shell: bash
-      - name: deploy images
-        run: |
-          ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }}
-          ls
-          docker-compose -f docker-compose.yml pull
-      - name: tester noget
+      - name: run deploy script on droplet
         run: |
           ssh -o "StrictHostKeyChecking no" ${{ secrets.SERVER_USERNAME }}@${{ secrets.SERVER_IP }} < deploy.sh
