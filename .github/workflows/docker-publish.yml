@@ -27,7 +27,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
-          docker-compose push
+          docker-compose -f docker-compose.yml push
       
   deploy:
     #deploy after pushing the images to docker hub
